@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Wallet Cloud Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 flex items-center justify-center">
+
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 space-y-6">
+    <!-- Header -->
+    <div class="text-center">
+      <h1 class="text-2xl font-bold text-gray-800">💳 Cloud E-Wallet Tracker</h1>
+      <p class="text-xs text-gray-500 mt-1">Naka-sync sa lahat ng mga phone mo</p>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-5 text-center shadow-lg">
+      <span class="text-xs uppercase tracking-wider text-blue-100">Kasalukuyang Balanse</span>
+      <h2 id="balance" class="text-3xl font-extrabold mt-1">₱0.00</h2>
+      
+      <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-blue-400/40 text-sm">
+        <div>
+          <span class="block text-xs text-blue-100">Pasok (Income)</span>
+          <span id="income-total" class="font-bold text-green-300">+₱0.00</span>
+        </div>
+        <div>
+          <span class="block text-xs text-blue-100">Gastos (Expense)</span>
+          <span id="expense-total" class="font-bold text-red-300">-₱0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form id="tracker-form" class="space-y-3">
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Deskripsyon</label>
+        <input type="text" id="desc" placeholder="hal. Sweldo, Merienda, Load" required 
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Halaga (₱)</label>
+          <input type="number" step="0.01" id="amount" placeholder="0.00" required 
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Uri</label>
+          <select id="type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+            <option value="income">Pasok (+)</option>
+            <option value="expense">Gastos (-)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" 
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition duration-200 text-sm shadow">
+        + Idagdag ang Transaksyon
+      </button>
+    </form>
+
+    <!-- History -->
+    <div>
+      <h3 class="text-sm font-bold text-gray-700 mb-2">Kasaysayan ng Transaksyon</h3>
+      <ul id="transaction-list" class="space-y-2 max-h-48 overflow-y-auto pr-1 text-sm">
+        <li class="text-center text-gray-400 py-4">Nag-o-load ng data...</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Inilagay na rito ang iyong totoong Firebase Config!
+    const firebaseConfig = {
+      apiKey: "AIzaSyDWnLjULj9iaeyd3gu4ohLLvvYdW4hoE18",
+      authDomain: "e-wallet-aaecb.firebaseapp.com",
+      projectId: "e-wallet-aaecb",
+      storageBucket: "e-wallet-aaecb.firebasestorage.app",
+      messagingSenderId: "166256897604",
+      appId: "1:166256897604:web:cb4072b94347a1e174d611",
+      measurementId: "G-H78QYB5XJ"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const balanceEl = document.getElementById('balance');
+    const incomeEl = document.getElementById('income-total');
+    const expenseEl = document.getElementById('expense-total');
+    const listEl = document.getElementById('transaction-list');
+    const form = document.getElementById('tracker-form');
+
+    // Realtime Listener mula sa Cloud Database
+    db.collection("transactions").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+      listEl.innerHTML = '';
+      let totalIncome = 0;
+      let totalExpense = 0;
+
+      if (snapshot.empty) {
+        listEl.innerHTML = '<li class="text-center text-gray-400 py-4">Walang transaksyon.</li>';
+      }
+
+      snapshot.forEach((doc) => {
+        const item = doc.data();
+        const id = doc.id;
+        const isIncome = item.type === 'income';
+        const val = parseFloat(item.amount);
+
+        if (isIncome) totalIncome += val;
+        else totalExpense += val;
+
+        const li = document.createElement('li');
+        li.className = `flex justify-between items-center p-3 rounded-lg border-l-4 ${
+          isIncome ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'
+        }`;
+
+        li.innerHTML = `
+          <div>
+            <p class="font-medium text-gray-800">${item.desc}</p>
+            <span class="text-xs text-gray-500">${item.date}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-bold ${isIncome ? 'text-green-600' : 'text-red-600'}">
+              ${isIncome ? '+' : '-'}₱${val.toFixed(2)}
+            </span>
+            <button onclick="deleteItem('${id}')" class="text-gray-400 hover:text-red-600 text-xs">✕</button>
+          </div>
+        `;
+        listEl.appendChild(li);
+      });
+
+      const currentBalance = totalIncome - totalExpense;
+      balanceEl.textContent = `₱${currentBalance.toFixed(2)}`;
+      incomeEl.textContent = `+₱${totalIncome.toFixed(2)}`;
+      expenseEl.textContent = `-₱${totalExpense.toFixed(2)}`;
+    }, (error) => {
+      console.error("Error fetching transactions: ", error);
+      listEl.innerHTML = '<li class="text-center text-red-500 py-4 text-xs">Kailangan pang i-enable ang Firestore Database sa Firebase Console.</li>';
+    });
+
+    // Add Transaction
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const desc = document.getElementById('desc').value;
+      const amount = document.getElementById('amount').value;
+      const type = document.getElementById('type').value;
+
+      db.collection("transactions").add({
+        desc,
+        amount: Math.abs(parseFloat(amount)),
+        type,
+        date: new Date().toLocaleDateString('tl-PH', { month: 'short', day: 'numeric' }),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(err => {
+        alert("Error saving: " + err.message);
+      });
+
+      form.reset();
+    });
+
+    // Delete Transaction
+    function deleteItem(id) {
+      db.collection("transactions").doc(id).delete();
+    }
+  </script>
+</body>
+</html>
