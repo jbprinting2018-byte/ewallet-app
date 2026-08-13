@@ -81,44 +81,6 @@
             </div>
         </section>
 
-        <!-- DAILY / WEEKLY SUMMARY SECTION -->
-        <section class="bg-white rounded-2xl p-3.5 shadow-sm border border-pink-100 space-y-2.5">
-            <div class="flex justify-between items-center border-b pb-1.5">
-                <h3 class="text-xs font-black uppercase tracking-wider text-pink-700 flex items-center gap-1.5">
-                    <i class="fa-solid fa-chart-pie"></i> Quick Analytics Summary
-                </h3>
-                <span class="text-[10px] text-slate-400 font-bold">Cloud Synced</span>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 text-xs">
-                <!-- TODAY SUMMARY -->
-                <div class="bg-pink-50/70 p-2.5 rounded-xl border border-pink-200/60">
-                    <p class="font-extrabold text-pink-900 border-b border-pink-200/50 pb-1 mb-1 flex items-center justify-between text-[11px]">
-                        <span>📅 TODAY</span>
-                        <span id="today-date-label" class="text-[10px] font-normal text-pink-600">--</span>
-                    </p>
-                    <div class="space-y-0.5 text-[11px]">
-                        <div class="flex justify-between"><span class="text-slate-500">In:</span> <span id="today-in" class="font-bold text-emerald-600">₱0.00</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Out/Load:</span> <span id="today-out" class="font-bold text-rose-600">₱0.00</span></div>
-                        <div class="flex justify-between border-t pt-0.5 mt-0.5"><span class="font-bold text-slate-700">Profit:</span> <span id="today-profit" class="font-black text-amber-600">₱0.00</span></div>
-                    </div>
-                </div>
-
-                <!-- THIS WEEK SUMMARY -->
-                <div class="bg-purple-50/70 p-2.5 rounded-xl border border-purple-200/60">
-                    <p class="font-extrabold text-purple-900 border-b border-purple-200/50 pb-1 mb-1 flex items-center justify-between text-[11px]">
-                        <span>📆 THIS WEEK</span>
-                        <span class="text-[10px] font-normal text-purple-600">7 Days</span>
-                    </p>
-                    <div class="space-y-0.5 text-[11px]">
-                        <div class="flex justify-between"><span class="text-slate-500">In:</span> <span id="week-in" class="font-bold text-emerald-600">₱0.00</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Out/Load:</span> <span id="week-out" class="font-bold text-rose-600">₱0.00</span></div>
-                        <div class="flex justify-between border-t pt-0.5 mt-0.5"><span class="font-bold text-slate-700">Profit:</span> <span id="week-profit" class="font-black text-amber-600">₱0.00</span></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- WALLETS LIST -->
         <section>
             <div class="flex justify-between items-center mb-2.5">
@@ -156,6 +118,37 @@
                     <button onclick="clearSearch()" class="absolute right-3 top-2 text-slate-400 hover:text-slate-600">
                         <i class="fa-solid fa-xmark text-sm"></i>
                     </button>
+                </div>
+            </div>
+
+            <!-- DAILY / WEEKLY SUMMARY SECTION (Nasa baba na katabi ng search/views area) -->
+            <div id="analytics-summary-container" class="mb-3 bg-slate-50 rounded-2xl p-3 border border-slate-200/60 space-y-2">
+                <div class="flex justify-between items-center border-b pb-1">
+                    <h3 class="text-[11px] font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie text-pink-600"></i> Quick Analytics Summary
+                    </h3>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-white p-2 rounded-xl border border-pink-100 shadow-sm">
+                        <p class="font-bold text-pink-900 border-b pb-0.5 mb-1 flex justify-between text-[10px]">
+                            <span>📅 TODAY</span> <span id="today-date-label" class="text-pink-600">--</span>
+                        </p>
+                        <div class="space-y-0.5 text-[11px]">
+                            <div class="flex justify-between"><span class="text-slate-500">In:</span> <span id="today-in" class="font-bold text-emerald-600">₱0.00</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Out:</span> <span id="today-out" class="font-bold text-rose-600">₱0.00</span></div>
+                            <div class="flex justify-between border-t pt-0.5 mt-0.5"><span class="font-bold text-slate-700">Profit:</span> <span id="today-profit" class="font-black text-amber-600">₱0.00</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-2 rounded-xl border border-purple-100 shadow-sm">
+                        <p class="font-bold text-purple-900 border-b pb-0.5 mb-1 flex justify-between text-[10px]">
+                            <span>📆 THIS WEEK</span> <span class="text-purple-600">7 Days</span>
+                        </p>
+                        <div class="space-y-0.5 text-[11px]">
+                            <div class="flex justify-between"><span class="text-slate-500">In:</span> <span id="week-in" class="font-bold text-emerald-600">₱0.00</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Out:</span> <span id="week-out" class="font-bold text-rose-600">₱0.00</span></div>
+                            <div class="flex justify-between border-t pt-0.5 mt-0.5"><span class="font-bold text-slate-700">Profit:</span> <span id="week-profit" class="font-black text-amber-600">₱0.00</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -249,7 +242,6 @@
             <form id="tx-form" onsubmit="saveTransaction(event)" class="space-y-3">
                 <input type="hidden" id="editing-tx-id" value="">
 
-                <!-- Type & Wallet -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div>
                         <label class="block text-xs font-extrabold text-slate-700 mb-1">Transaction Type</label>
@@ -268,25 +260,23 @@
                     </div>
                 </div>
 
-                <!-- Amount & Service Fee -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div>
                         <label class="block text-xs font-extrabold text-slate-700 mb-1">Amount (₱)</label>
                         <input type="number" step="0.01" id="tx-amount" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-extrabold text-slate-800 focus:ring-2 focus:ring-pink-500">
                     </div>
-                    <div id="fee-field-container">
+                    <div>
                         <label class="block text-xs font-extrabold text-slate-700 mb-1">Service Fee (₱)</label>
                         <input type="number" step="0.01" id="tx-fee" placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-extrabold text-amber-600 focus:ring-2 focus:ring-pink-500">
                     </div>
                 </div>
 
-                <!-- Date & Status -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div>
                         <label class="block text-xs font-extrabold text-slate-700 mb-1">Date & Time</label>
                         <input type="datetime-local" id="tx-datetime" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-pink-500">
                     </div>
-                    <div id="status-field-container">
+                    <div>
                         <label class="block text-xs font-extrabold text-slate-700 mb-1">Status</label>
                         <select id="tx-status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-extrabold text-slate-700 focus:ring-2 focus:ring-pink-500">
                             <option value="CLAIMED" class="text-emerald-600">✅ CLAIMED</option>
@@ -295,19 +285,16 @@
                     </div>
                 </div>
 
-                <!-- Reference Number -->
-                <div id="ref-field-container">
+                <div>
                     <label class="block text-xs font-extrabold text-slate-700 mb-1">Reference Number</label>
                     <input type="text" id="tx-ref" placeholder="Enter Ref #" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-pink-500">
                 </div>
 
-                <!-- Particular / Note -->
                 <div>
                     <label class="block text-xs font-extrabold text-slate-700 mb-1">Particular / Note</label>
                     <input type="text" id="tx-note" placeholder="Customer name or transaction note..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-pink-500">
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit" class="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-extrabold rounded-xl text-xs shadow-md hover:from-pink-700 hover:to-purple-700 transition">
                     Save Transaction
                 </button>
@@ -315,14 +302,14 @@
         </div>
     </div>
 
-    <!-- MODAL: ADD / EDIT WALLET DETAILS -->
+    <!-- MODAL: ADD / EDIT WALLET -->
     <div id="edit-wallet-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 id="wallet-modal-title" class="text-base font-extrabold text-slate-800">Manage E-Wallet</h3>
-                <button onclick="closeEditWalletModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button type="button" onclick="closeEditWalletModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <form onsubmit="saveWalletEdit(event)" class="space-y-3">
+            <form id="wallet-form" onsubmit="saveWalletEdit(event)" class="space-y-3">
                 <input type="hidden" id="edit-wallet-id">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Wallet Name</label>
@@ -345,7 +332,7 @@
         <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="text-base font-extrabold text-slate-800">Update Physical Cash</h3>
-                <button onclick="closeEditCashModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button type="button" onclick="closeEditCashModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form onsubmit="saveCashEdit(event)" class="space-y-3">
                 <div>
@@ -357,13 +344,13 @@
         </div>
     </div>
 
-    <!-- FIREBASE & MAIN APPLICATION SCRIPT -->
+    <!-- FIREBASE & MAIN APP SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // ==========================================
-        // ⚠️ PALITAN ITO NG SIKRETONG FIREBASE CONFIG MO
+        // ⚠️ ILAGAY ANG FIREBASE CONFIG MO DITO
         // ==========================================
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
@@ -378,7 +365,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // APP STATE
         window.appState = {
             cashBalance: 0,
             wallets: {},
@@ -388,7 +374,6 @@
             timeFilter: 'all'
         };
 
-        // DEFAULT WALLETS (KAPAG BAGONG DATABASE)
         const defaultWallets = {
             "gcash1": { name: "GCASH #1", balance: 5000, color: "from-pink-500 to-rose-500" },
             "gcash2": { name: "GCASH #2", balance: 2500, color: "from-purple-500 to-pink-500" },
@@ -397,7 +382,6 @@
             "metrobank": { name: "METROBANK", balance: 12400.75, color: "from-indigo-600 to-purple-700" }
         };
 
-        // REAL-TIME FIREBASE LISTENERS (AUTOMATIC CLOUD SYNC)
         onValue(ref(db, 'cashBalance'), (snapshot) => {
             const val = snapshot.val();
             window.appState.cashBalance = val !== null ? val : 0;
@@ -426,7 +410,6 @@
             renderNotes();
         });
 
-        // GLOBAL HELPER FUNCTIONS
         window.renderAll = function() {
             renderWallets();
             renderSummary();
@@ -447,7 +430,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start z-10">
                         <span class="text-[11px] font-black tracking-wider uppercase opacity-90 truncate max-w-[100px]">${w.name}</span>
-                        <button onclick="openEditWalletModal('${key}')" class="text-xs bg-white/25 hover:bg-white/40 w-6 h-6 rounded-full flex items-center justify-center transition">
+                        <button type="button" onclick="openEditWalletModal('${key}')" class="text-xs bg-white/25 hover:bg-white/40 w-6 h-6 rounded-full flex items-center justify-center transition">
                             <i class="fa-solid fa-gear"></i>
                         </button>
                     </div>
@@ -461,7 +444,6 @@
 
             document.getElementById('cash-balance').innerText = window.appState.cashBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
             
-            // AUTO-COMPUTE TOTAL CAPITAL (Wallets + Cash Balance)
             const grandTotal = totalWalletBal + parseFloat(window.appState.cashBalance);
             document.getElementById('total-balance').innerText = '₱' + grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2});
         }
@@ -530,7 +512,8 @@
                 filtered = filtered.filter(t => new Date(t.datetime) >= oneWeekAgo);
             }
 
-            const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+            const searchInputEl = document.getElementById('search-input');
+            const searchQuery = searchInputEl ? searchInputEl.value.toLowerCase().trim() : '';
             if (searchQuery) {
                 filtered = filtered.filter(t => 
                     (t.ref && t.ref.toLowerCase().includes(searchQuery)) ||
@@ -557,7 +540,7 @@
                     </div>
                     <div class="text-right">
                         <p class="font-black text-pink-600">₱${parseFloat(tx.amount || 0).toLocaleString()}</p>
-                        <button onclick="deleteTransaction('${tx.id}')" class="text-rose-500 text-[10px] hover:underline">Delete</button>
+                        <button type="button" onclick="deleteTransaction('${tx.id}')" class="text-rose-500 text-[10px] hover:underline">Delete</button>
                     </div>
                 `;
                 list.appendChild(item);
@@ -566,6 +549,7 @@
 
         function populateWalletOptions() {
             const select = document.getElementById('tx-wallet');
+            if (!select) return;
             select.innerHTML = '';
             Object.keys(window.appState.wallets).forEach(key => {
                 const w = window.appState.wallets[key];
@@ -576,7 +560,6 @@
             });
         }
 
-        // WALLET MANAGEMENT MODAL FUNCTIONS
         window.openAddWalletModal = function() {
             document.getElementById('wallet-modal-title').innerText = "Add New Wallet";
             document.getElementById('edit-wallet-id').value = "";
@@ -629,14 +612,15 @@
             }
         };
 
-        // CASH BALANCE MODAL
         window.openEditCashModal = function() {
             document.getElementById('edit-cash-amount').value = window.appState.cashBalance;
             document.getElementById('edit-cash-modal').classList.remove('hidden');
         };
+
         window.closeEditCashModal = function() {
             document.getElementById('edit-cash-modal').classList.add('hidden');
         };
+
         window.saveCashEdit = function(e) {
             e.preventDefault();
             const val = parseFloat(document.getElementById('edit-cash-amount').value) || 0;
@@ -645,7 +629,6 @@
             });
         };
 
-        // OTHER TABS & UTILS
         window.switchTab = function(tab) {
             window.appState.currentTab = tab;
             document.getElementById('search-bar-container').classList.toggle('hidden', tab !== 'search');
@@ -658,7 +641,7 @@
             window.appState.timeFilter = filter;
             ['all', 'today', 'week'].forEach(f => {
                 const btn = document.getElementById(`filter-${f}`);
-                btn.className = f === filter ? "flex-1 py-1.5 rounded-lg bg-white shadow-sm text-pink-600 transition" : "flex-1 py-1.5 rounded-lg text-slate-500 transition";
+                if(btn) btn.className = f === filter ? "flex-1 py-1.5 rounded-lg bg-white shadow-sm text-pink-600 transition" : "flex-1 py-1.5 rounded-lg text-slate-500 transition";
             });
             renderCurrentView();
         };
@@ -689,11 +672,8 @@
             push(ref(db, 'transactions'), {
                 type, walletKey, walletName: walletObj ? walletObj.name : 'Wallet', amount, fee, datetime, ref: refNum, note
             }).then(() => {
-                // Update wallet balance accordingly
                 let newBal = parseFloat(walletObj.balance || 0);
-                if (type === 'Cash In') newBal -= amount;
-                else if (type === 'Cash Out' || type === 'Load' || type === 'Payment') newBal -= amount;
-
+                newBal -= amount;
                 set(ref(db, `wallets/${walletKey}/balance`), newBal);
                 closeAddTxModal();
             });
@@ -701,7 +681,7 @@
 
         window.deleteTransaction = function(id) {
             if (confirm("Burahin ang transaksyong ito?")) {
-                remove(ref(db, `transactions/${id}`));
+                remove(ref(db, 'transactions/${id}'));
             }
         };
 
@@ -716,12 +696,13 @@
 
         function renderNotes() {
             const list = document.getElementById('notes-list');
+            if(!list) return;
             list.innerHTML = '';
             Object.keys(window.appState.notes).forEach(id => {
                 const note = window.appState.notes[id];
                 const div = document.createElement('div');
                 div.className = "p-2.5 bg-amber-50 border border-amber-200/60 rounded-xl text-xs flex justify-between items-center";
-                div.innerHTML = `<span>${note.text}</span> <button onclick="remove(ref(db, 'notes/${id}'))" class="text-rose-500"><i class="fa-solid fa-trash"></i></button>`;
+                div.innerHTML = `<span>${note.text}</span> <button type="button" onclick="remove(ref(db, 'notes/${id}'))" class="text-rose-500"><i class="fa-solid fa-trash"></i></button>`;
                 list.appendChild(div);
             });
         }
