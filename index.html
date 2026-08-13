@@ -1,682 +1,720 @@
 <!DOCTYPE html>
-<html lang="tl">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wallet Tracker</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Plus Jakarta Sans Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .tabular-nums {
-      font-variant-numeric: tabular-nums;
-    }
-    /* Hide scrollbar for horizontal filters */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>E-Wallet Tracker Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .pb-safe { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .modal-active { overflow: hidden; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-28">
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen pb-safe">
 
-  <!-- TOP HEADER -->
-  <header class="bg-white border-b border-slate-100 sticky top-0 z-30 px-4 py-3 shadow-sm">
-    <div class="max-w-md mx-auto flex justify-between items-center">
-      <div>
-        <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Wallet Tracker</h1>
-        <div class="flex items-center gap-1.5 mt-0.5">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <p class="text-[11px] font-semibold text-emerald-600">Live · synced across 5 devices</p>
-        </div>
-      </div>
-      <button onclick="toggleSyncModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1">
-        <span>⚡ Redis Sync</span>
-      </button>
-    </div>
-  </header>
-
-  <main class="max-w-md mx-auto px-4 py-4 space-y-4">
-
-    <!-- TOP SUMMARY SECTION (3 CARDS IN ONE ROW) -->
-    <div class="grid grid-cols-3 gap-2">
-      <!-- Card A: Overall Capital -->
-      <div class="bg-gradient-to-br from-indigo-600 to-purple-700 text-white p-3 rounded-2xl shadow-md flex flex-col justify-between">
-        <span class="text-[10px] font-bold tracking-wider uppercase opacity-80">Overall Capital</span>
-        <div id="stat-overall" class="text-base font-extrabold tabular-nums tracking-tight mt-2">₱0.00</div>
-      </div>
-
-      <!-- Card B: Total E-Wallet -->
-      <div class="bg-sky-500 text-white p-3 rounded-2xl shadow-md flex flex-col justify-between">
-        <span class="text-[10px] font-bold tracking-wider uppercase opacity-80">Total E-Wallet</span>
-        <div id="stat-ewallet" class="text-base font-extrabold tabular-nums tracking-tight mt-2">₱0.00</div>
-      </div>
-
-      <!-- Card C: Total Profit Box -->
-      <div class="bg-emerald-600 text-white p-3 rounded-2xl shadow-md flex flex-col justify-between">
-        <span class="text-[10px] font-bold tracking-wider uppercase opacity-80">Total Profit</span>
-        <div id="stat-profit" class="text-base font-extrabold tabular-nums tracking-tight mt-2">₱0.00</div>
-      </div>
-    </div>
-
-    <!-- SEPARATE CARD: CASH BALANCE / ON-HAND BOX -->
-    <div class="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl shadow-sm flex justify-between items-center">
-      <div>
-        <div class="flex items-center gap-1.5 text-amber-900 font-bold text-xs uppercase tracking-wider">
-          <span>💵</span> Cash Balance / On-Hand Box
-        </div>
-        <p class="text-[10px] text-amber-700 font-medium">Tracks ONLY capital cash inside the shop kaha</p>
-      </div>
-      <div id="stat-cash" class="text-xl font-black text-amber-900 tabular-nums">₱0.00</div>
-    </div>
-
-    <!-- 5 INDIVIDUAL E-WALLET CARDS -->
-    <div>
-      <div class="flex justify-between items-center mb-2">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">E-Wallet Accounts</h2>
-        <span class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">5 Active</span>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2.5" id="wallet-cards-container">
-        <!-- GCash #1 -->
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm relative group">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-blue-600 flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-blue-500"></span> GCash #1
-            </span>
-            <button onclick="editWalletName('gcash1')" class="text-slate-300 hover:text-slate-600 text-xs">⚙️</button>
-          </div>
-          <div id="wal-gcash1-num" class="text-[10px] text-slate-400 font-medium">09318513907</div>
-          <div id="wal-gcash1" class="text-lg font-extrabold text-slate-900 tabular-nums mt-2">₱0.00</div>
-        </div>
-
-        <!-- GCash #2 -->
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm relative group">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-blue-600 flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-blue-500"></span> GCash #2
-            </span>
-            <button onclick="editWalletName('gcash2')" class="text-slate-300 hover:text-slate-600 text-xs">⚙️</button>
-          </div>
-          <div id="wal-gcash2-num" class="text-[10px] text-slate-400 font-medium">09948704491</div>
-          <div id="wal-gcash2" class="text-lg font-extrabold text-slate-900 tabular-nums mt-2">₱0.00</div>
-        </div>
-
-        <!-- Maya -->
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm relative group">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Maya
-            </span>
-            <button onclick="editWalletName('maya')" class="text-slate-300 hover:text-slate-600 text-xs">⚙️</button>
-          </div>
-          <div class="text-[10px] text-slate-400 font-medium">Wallet</div>
-          <div id="wal-maya" class="text-lg font-extrabold text-slate-900 tabular-nums mt-2">₱0.00</div>
-        </div>
-
-        <!-- Peddlr Load -->
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm relative group">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-amber-600 flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span> Peddlr Load
-            </span>
-            <button onclick="editWalletName('peddlr')" class="text-slate-300 hover:text-slate-600 text-xs">⚙️</button>
-          </div>
-          <div class="text-[10px] text-slate-400 font-medium">E-Load Funds</div>
-          <div id="wal-peddlr" class="text-lg font-extrabold text-slate-900 tabular-nums mt-2">₱0.00</div>
-        </div>
-
-        <!-- Metrobank -->
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm relative group col-span-2">
-          <div class="flex justify-between items-start">
-            <span class="text-xs font-bold text-indigo-600 flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Metrobank
-            </span>
-            <button onclick="editWalletName('metrobank')" class="text-slate-300 hover:text-slate-600 text-xs">⚙️</button>
-          </div>
-          <div class="text-[10px] text-slate-400 font-medium">Bank Account</div>
-          <div id="wal-metrobank" class="text-lg font-extrabold text-slate-900 tabular-nums mt-2">₱0.00</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STRICT TRANSACTION HISTORY BLOCK LAYOUT -->
-    <div class="bg-white rounded-3xl border border-slate-100 p-4 shadow-sm space-y-3">
-      
-      <!-- LINE 1: TAB FILTERS (SCROLLABLE) -->
-      <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
-        <button onclick="setFilter('all')" id="tab-all" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white whitespace-nowrap">Main Log</button>
-        <button onclick="setFilter('cashin')" id="tab-cashin" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 whitespace-nowrap">Cash In</button>
-        <button onclick="setFilter('cashout')" id="tab-cashout" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 whitespace-nowrap">Cash Out</button>
-        <button onclick="setFilter('load')" id="tab-load" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 whitespace-nowrap">Load</button>
-        <button onclick="setFilter('payment')" id="tab-payment" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 whitespace-nowrap">Payment</button>
-        <button onclick="setFilter('capital')" id="tab-capital" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 whitespace-nowrap">Add Capital</button>
-      </div>
-
-      <!-- LINE 2: SEARCH BAR -->
-      <div class="relative">
-        <input type="text" id="search-input" onkeyup="renderLogs()" placeholder="Search by Ref # or Details..." 
-               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900">
-      </div>
-
-      <!-- LINE 3: SCROLLABLE LOG LIST OR EMPTY STATE -->
-      <div id="transaction-log-list" class="divide-y divide-slate-100 min-h-[120px]">
-        <!-- Rendered via Javascript -->
-      </div>
-    </div>
-
-  </main>
-
-  <!-- FIXED BOTTOM NAVIGATION BAR -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 px-6 py-3 z-40">
-    <div class="max-w-md mx-auto flex justify-between items-center">
-      
-      <!-- Left Button: Notes / Reminder -->
-      <button onclick="openNotesModal()" class="flex flex-col items-center text-slate-500 hover:text-slate-900">
-        <span class="text-xl">📝</span>
-        <span class="text-[10px] font-bold mt-0.5">Notes</span>
-      </button>
-
-      <!-- Center Button: Prominent + New Transaction -->
-      <button onclick="openTxModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold px-5 py-3 rounded-2xl shadow-lg shadow-indigo-200 flex items-center gap-2 transform active:scale-95 transition">
-        <span class="text-lg leading-none">+</span>
-        <span class="text-xs uppercase tracking-wider">New Transaction</span>
-      </button>
-
-      <!-- Right Button: Camera Receipt Scanner -->
-      <button onclick="simulateReceiptScan()" class="flex flex-col items-center text-slate-500 hover:text-slate-900">
-        <span class="text-xl">📷</span>
-        <span class="text-[10px] font-bold mt-0.5">Scan OCR</span>
-      </button>
-
-    </div>
-  </nav>
-
-  <!-- MODAL: NEW / EDIT TRANSACTION -->
-  <div id="txModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 id="modal-title" class="font-extrabold text-slate-900 text-base">New Transaction</h3>
-        <button onclick="closeTxModal()" class="text-slate-400 font-bold text-lg">✕</button>
-      </div>
-
-      <form id="tx-form" onsubmit="handleFormSubmit(event)" class="space-y-3">
-        <input type="hidden" id="editing-id" value="">
-
-        <!-- Category / Type -->
-        <div>
-          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Transaction Type</label>
-          <select id="tx-type" onchange="toggleFormFields()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-800 mt-1 focus:ring-2 focus:ring-blue-600">
-            <option value="cashin">Cash In (+ Fee)</option>
-            <option value="cashout">Cash Out (+ Fee)</option>
-            <option value="load">Buy Load (+ Fee)</option>
-            <option value="payment">Payment / Bills</option>
-            <option value="capital">Add Capital</option>
-          </select>
-        </div>
-
-        <!-- Wallet Selection -->
-        <div id="wallet-select-group">
-          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Source Wallet</label>
-          <select id="tx-wallet" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-800 mt-1">
-            <option value="gcash1">GCash #1 (09318513907)</option>
-            <option value="gcash2">GCash #2 (09948704491)</option>
-            <option value="maya">Maya</option>
-            <option value="peddlr">Peddlr Load</option>
-            <option value="metrobank">Metrobank</option>
-            <option value="cash">CASH (For Add Capital Fresh Injection)</option>
-          </select>
-        </div>
-
-        <!-- Amount & Service Fee -->
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Amount (₱)</label>
-            <input type="number" step="0.01" id="tx-amount" required placeholder="0.00" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-800 mt-1">
-          </div>
-          <div id="fee-group">
-            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Service/Top-Up Fee (₱)</label>
-            <input type="number" step="0.01" id="tx-fee" placeholder="0.00" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-800 mt-1">
-          </div>
-        </div>
-
-        <!-- Reference Number (Strictly required for Cash In / Out) -->
-        <div>
-          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Reference Number <span id="ref-req-text" class="text-red-500">*</span></label>
-          <input type="text" id="tx-ref" placeholder="e.g. 1002394823" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-800 mt-1">
-        </div>
-
-        <!-- Phone Number / Account details -->
-        <div>
-          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Customer Phone / Account Details</label>
-          <input type="text" id="tx-phone" placeholder="e.g. 09171234567 or TNT Load" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-800 mt-1">
-        </div>
-
-        <!-- Cash Out Status System -->
-        <div id="cashout-status-group" class="hidden">
-          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Cash Out Status</label>
-          <select id="tx-status" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-800 mt-1">
-            <option value="UNCLAIMED">UNCLAIMED (Amber Badge)</option>
-            <option value="CLAIMED">CLAIMED (Bold Red Badge)</option>
-          </select>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-3.5 rounded-2xl text-xs uppercase tracking-wider mt-2">
-          Save Transaction
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: RECEIPT DETAILS POPUP -->
-  <div id="receiptModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-100 text-center relative">
-      <button onclick="closeReceiptModal()" class="absolute top-4 right-4 text-slate-400 font-bold">✕</button>
-      
-      <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl font-black">✓</div>
-      <div>
-        <h4 id="rcpt-title" class="text-base font-extrabold text-slate-900">E-Load / Transaction Receipt</h4>
-        <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Official Log Proof</p>
-      </div>
-
-      <div class="bg-slate-50 rounded-2xl p-4 text-left space-y-2 text-xs font-medium">
-        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-          <span class="text-slate-400">Ref Number</span>
-          <span id="rcpt-ref" class="font-extrabold text-slate-800 tabular-nums">---</span>
-        </div>
-        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-          <span class="text-slate-400">Date & Time</span>
-          <span id="rcpt-date" class="font-bold text-slate-700">---</span>
-        </div>
-        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-          <span class="text-slate-400">Network / Wallet</span>
-          <span id="rcpt-wallet" class="font-bold text-slate-700">---</span>
-        </div>
-        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-          <span class="text-slate-400">Target / Phone</span>
-          <span id="rcpt-phone" class="font-bold text-slate-700">---</span>
-        </div>
-        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-          <span class="text-slate-400">Amount</span>
-          <span id="rcpt-amount" class="font-bold text-slate-800 tabular-nums">₱0.00</span>
-        </div>
-        <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
-          <span class="text-slate-400">Service Fee</span>
-          <span id="rcpt-fee" class="font-bold text-emerald-600 tabular-nums">₱0.00</span>
-        </div>
-        <div class="flex justify-between pt-1">
-          <span class="font-extrabold text-slate-900">Total Charged</span>
-          <span id="rcpt-total" class="font-black text-indigo-600 tabular-nums text-sm">₱0.00</span>
-        </div>
-      </div>
-
-      <button onclick="closeReceiptModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl text-xs">Close Receipt</button>
-    </div>
-  </div>
-
-  <!-- MODAL: NOTES / REMINDER -->
-  <div id="notesModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl p-5 space-y-3">
-      <div class="flex justify-between items-center">
-        <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">📝 Shop Notes & Reminders</h3>
-        <button onclick="closeNotesModal()" class="text-slate-400 font-bold">✕</button>
-      </div>
-      <textarea id="shop-notes" rows="6" oninput="saveNotes()" placeholder="Type inventory reminders, cash turnover notes, etc..." 
-                class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
-      <p class="text-[10px] text-slate-400 font-medium">Auto-saved locally.</p>
-    </div>
-  </div>
-
-  <!-- JAVASCRIPT APP ENGINE & CRUD LOGIC -->
-  <script>
-    // INITIAL ZERO-BASE STATE
-    let state = {
-      wallets: {
-        gcash1: { name: 'GCash #1', num: '09318513907', bal: 0 },
-        gcash2: { name: 'GCash #2', num: '09948704491', bal: 0 },
-        maya: { name: 'Maya', num: 'Wallet', bal: 0 },
-        peddlr: { name: 'Peddlr Load', num: 'E-Load Funds', bal: 0 },
-        metrobank: { name: 'Metrobank', num: 'Bank Account', bal: 0 }
-      },
-      cashBalance: 0,
-      totalProfit: 0,
-      transactions: [],
-      currentFilter: 'all'
-    };
-
-    // Load State from LocalStorage on load
-    window.onload = () => {
-      const saved = localStorage.getItem('wallet_tracker_state');
-      if (saved) {
-        state = JSON.parse(saved);
-      }
-      const savedNotes = localStorage.getItem('wallet_tracker_notes');
-      if (savedNotes) {
-        document.getElementById('shop-notes').value = savedNotes;
-      }
-      recalculateAllMath();
-      renderApp();
-    };
-
-    function saveState() {
-      localStorage.setItem('wallet_tracker_state', JSON.stringify(state));
-      renderApp();
-    }
-
-    // STRICT RECALCULATION MATH ENGINE
-    function recalculateAllMath() {
-      // Reset to zero-base
-      Object.keys(state.wallets).forEach(k => state.wallets[k].bal = 0);
-      state.cashBalance = 0;
-      state.totalProfit = 0;
-
-      // Re-run all transactions in order
-      state.transactions.forEach(tx => {
-        const amt = parseFloat(tx.amount) || 0;
-        const fee = parseFloat(tx.fee) || 0;
-        const wal = tx.wallet;
-
-        if (tx.type === 'cashin') {
-          // Deduct Amount from chosen E-Wallet. Add ONLY Amount to Cash Balance. Add Service Fee to Total Profit.
-          if (state.wallets[wal]) state.wallets[wal].bal -= amt;
-          state.cashBalance += amt;
-          state.totalProfit += fee;
-        } 
-        else if (tx.type === 'cashout') {
-          // Add Amount to chosen E-Wallet. Deduct ONLY Amount from Cash Balance. Add Service Fee to Total Profit.
-          if (state.wallets[wal]) state.wallets[wal].bal += amt;
-          state.cashBalance -= amt;
-          state.totalProfit += fee;
-        } 
-        else if (tx.type === 'load') {
-          // Deduct Amount from chosen E-Wallet. Add ONLY Amount to Cash Balance. Add Top-up Fee to Total Profit.
-          if (state.wallets[wal]) state.wallets[wal].bal -= amt;
-          state.cashBalance += amt;
-          state.totalProfit += fee;
-        } 
-        else if (tx.type === 'payment') {
-          // Deduct bills/payment amount from selected wallet or cash balance.
-          if (wal === 'cash') {
-            state.cashBalance -= amt;
-          } else if (state.wallets[wal]) {
-            state.wallets[wal].bal -= amt;
-          }
-        } 
-        else if (tx.type === 'capital') {
-          if (wal === 'cash') {
-            // Fresh capital injection directly to Cash Balance (owner's pocket). Do not deduct from anything.
-            state.cashBalance += amt;
-          } else if (state.wallets[wal]) {
-            // Replenishment: Deduct from Cash Balance, add to E-Wallet.
-            state.cashBalance -= amt;
-            state.wallets[wal].bal += amt;
-          }
-        }
-      });
-    }
-
-    // RENDER DASHBOARD & NUMBERS
-    function renderApp() {
-      // Render Individual Wallets
-      document.getElementById('wal-gcash1').innerText = formatPHP(state.wallets.gcash1.bal);
-      document.getElementById('wal-gcash2').innerText = formatPHP(state.wallets.gcash2.bal);
-      document.getElementById('wal-maya').innerText = formatPHP(state.wallets.maya.bal);
-      document.getElementById('wal-peddlr').innerText = formatPHP(state.wallets.peddlr.bal);
-      document.getElementById('wal-metrobank').innerText = formatPHP(state.wallets.metrobank.bal);
-
-      // Sum E-Wallets
-      const totalEWallet = Object.values(state.wallets).reduce((a, b) => a + b.bal, 0);
-      document.getElementById('stat-ewallet').innerText = formatPHP(totalEWallet);
-
-      // Cash Balance & Profit
-      document.getElementById('stat-cash').innerText = formatPHP(state.cashBalance);
-      document.getElementById('stat-profit').innerText = formatPHP(state.totalProfit);
-
-      // Overall Capital = Total E-Wallet + Cash Balance
-      const overall = totalEWallet + state.cashBalance;
-      document.getElementById('stat-overall').innerText = formatPHP(overall);
-
-      renderLogs();
-    }
-
-    // RENDER TRANSACTION LOGS (LINE 3)
-    function renderLogs() {
-      const container = document.getElementById('transaction-log-list');
-      const search = document.getElementById('search-input').value.toLowerCase();
-      
-      let filtered = state.transactions.filter(tx => {
-        if (state.currentFilter !== 'all' && tx.type !== state.currentFilter) return false;
-        if (search) {
-          const matchRef = (tx.ref || '').toLowerCase().includes(search);
-          const matchPhone = (tx.phone || '').toLowerCase().includes(search);
-          return matchRef || matchPhone;
-        }
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-8">
-            <p class="text-xs font-semibold text-slate-400">No transactions yet. Tap the + button below to record one.</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = filtered.slice().reverse().map(tx => {
-        const walName = tx.wallet === 'cash' ? 'Cash Box' : (state.wallets[tx.wallet]?.name || tx.wallet);
-        let badgeHtml = '';
-
-        if (tx.type === 'cashout') {
-          if (tx.status === 'CLAIMED') {
-            badgeHtml = `<span class="bg-red-600 text-white font-black text-[9px] px-2 py-0.5 rounded-full uppercase">CLAIMED</span>`;
-          } else {
-            badgeHtml = `<span class="bg-amber-100 text-amber-800 font-bold text-[9px] px-2 py-0.5 rounded-full uppercase">UNCLAIMED</span>`;
-          }
-        }
-
-        return `
-          <div class="py-3 flex justify-between items-center cursor-pointer hover:bg-slate-50/80 px-1 rounded-xl transition" onclick="openReceiptModal('${tx.id}')">
-            <div class="space-y-0.5">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-extrabold text-slate-900">${tx.type.toUpperCase()} - ${walName}</span>
-                ${badgeHtml}
-              </div>
-              <p class="text-[10px] font-semibold text-slate-400">
-                Ref: <span class="text-slate-600 font-bold">${tx.ref || 'N/A'}</span> · ${tx.phone || 'No Details'}
-              </p>
+    <!-- TOP HEADER -->
+    <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-4 sticky top-0 z-30 shadow-md">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-black tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-wallet text-amber-400"></i> E-WALLET TRACKER
+                </h1>
+                <p class="text-xs text-blue-200">Smart Financial Log & Scanner</p>
             </div>
             <div class="text-right">
-              <div class="text-xs font-black text-slate-900 tabular-nums">₱${parseFloat(tx.amount).toLocaleString('en-US', {minimumFractionDigits:2})}</div>
-              <div class="flex gap-2 justify-end text-[10px] mt-1">
-                <button onclick="event.stopPropagation(); editTx('${tx.id}')" class="text-blue-600 font-bold">Edit</button>
-                <button onclick="event.stopPropagation(); deleteTx('${tx.id}')" class="text-red-500 font-bold">Delete</button>
-              </div>
+                <span class="text-xs text-blue-200 block">Total Balance</span>
+                <span id="total-balance" class="text-lg font-extrabold text-amber-300">₱0.00</span>
             </div>
-          </div>
-        `;
-      }).join('');
-    }
+        </div>
+    </header>
 
-    // FORM HANDLING & CRUD REVERSAL
-    function handleFormSubmit(e) {
-      e.preventDefault();
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-md mx-auto p-4 space-y-4">
 
-      const type = document.getElementById('tx-type').value;
-      const ref = document.getElementById('tx-ref').value.trim();
-      
-      // Strict requirement for Cash In and Cash Out
-      if ((type === 'cashin' || type === 'cashout') && !ref) {
-        alert('REFERENCE NUMBER is strictly required for Cash In and Cash Out!');
-        return;
-      }
+        <!-- WALLETS CAROUSEL / LIST -->
+        <section>
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">My E-Wallets</h2>
+                <span class="text-xs text-slate-400">Click ⚙️ to edit fund</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5" id="wallets-container">
+                <!-- Wallet Cards Populated dynamically -->
+            </div>
+        </section>
 
-      const id = document.getElementById('editing-id').value || 'tx_' + Date.now();
-      const newTx = {
-        id: id,
-        type: type,
-        wallet: document.getElementById('tx-wallet').value,
-        amount: parseFloat(document.getElementById('tx-amount').value) || 0,
-        fee: parseFloat(document.getElementById('tx-fee').value) || 0,
-        ref: ref,
-        phone: document.getElementById('tx-phone').value.trim(),
-        status: document.getElementById('tx-status').value,
-        timestamp: new Date().toLocaleString()
-      };
+        <!-- DYNAMIC CONTENT AREA (Main Log / Cash In / Cash Out / Notes / Search) -->
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <!-- Dynamic Section Header -->
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+                <h2 id="view-title" class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-list-ul text-blue-600"></i> Main Transaction Log
+                </h2>
+                <span id="record-count" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 font-semibold text-slate-600">0 records</span>
+            </div>
 
-      const existingIndex = state.transactions.findIndex(t => t.id === id);
-      if (existingIndex >= 0) {
-        state.transactions[existingIndex] = newTx;
-      } else {
-        state.transactions.push(newTx);
-      }
+            <!-- Search Bar (Shown in Search view or expandable) -->
+            <div id="search-bar-container" class="mb-3 hidden">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                    <input type="text" id="search-input" placeholder="Search by Ref #, Amount, or Note..." 
+                        class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        oninput="renderCurrentView()">
+                    <button onclick="clearSearch()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
 
-      recalculateAllMath();
-      saveState();
-      closeTxModal();
-    }
+            <!-- Notes Container (Shown when Notes View is Active) -->
+            <div id="notes-view-container" class="hidden space-y-3 mb-4">
+                <div class="flex gap-2">
+                    <input type="text" id="new-note-input" placeholder="Add a quick reminder or note..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="addNote()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700">Add</button>
+                </div>
+                <div id="notes-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
 
-    function deleteTx(id) {
-      if (confirm('Are you sure you want to delete this transaction? Math will be dynamically reversed.')) {
-        state.transactions = state.transactions.filter(t => t.id !== id);
-        recalculateAllMath();
-        saveState();
-      }
-    }
+            <!-- Transaction List -->
+            <div id="transaction-list" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+                <!-- Dynamic Items -->
+            </div>
+        </section>
 
-    function editTx(id) {
-      const tx = state.transactions.find(t => t.id === id);
-      if (!tx) return;
+    </main>
 
-      document.getElementById('editing-id').value = tx.id;
-      document.getElementById('tx-type').value = tx.type;
-      document.getElementById('tx-wallet').value = tx.wallet;
-      document.getElementById('tx-amount').value = tx.amount;
-      document.getElementById('tx-fee').value = tx.fee;
-      document.getElementById('tx-ref').value = tx.ref;
-      document.getElementById('tx-phone').value = tx.phone;
-      document.getElementById('tx-status').value = tx.status || 'UNCLAIMED';
+    <!-- BOTTOM NAVIGATION (6 BUTTONS: MAIN LOG, CASH IN, CASH OUT, ADD TX, NOTES, SEARCH) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-30 px-2 py-1.5">
+        <div class="max-w-md mx-auto grid grid-cols-6 items-center text-center text-[10px] font-medium text-slate-500">
+            <!-- 1. Main Log -->
+            <button onclick="switchTab('main')" id="tab-main" class="p-1 text-blue-600 flex flex-col items-center">
+                <i class="fa-solid fa-list-check text-lg mb-0.5"></i>
+                <span>Main Log</span>
+            </button>
 
-      toggleFormFields();
-      document.getElementById('modal-title').innerText = 'Edit Transaction';
-      document.getElementById('txModal').classList.remove('hidden');
-    }
+            <!-- 2. Cash In -->
+            <button onclick="switchTab('cashin')" id="tab-cashin" class="p-1 hover:text-blue-600 flex flex-col items-center">
+                <i class="fa-solid fa-circle-arrow-down text-lg text-emerald-500 mb-0.5"></i>
+                <span>Cash In</span>
+            </button>
 
-    // MODAL CONTROL & UI TOGGLES
-    function openTxModal() {
-      document.getElementById('tx-form').reset();
-      document.getElementById('editing-id').value = '';
-      document.getElementById('modal-title').innerText = 'New Transaction';
-      toggleFormFields();
-      document.getElementById('txModal').classList.remove('hidden');
-    }
+            <!-- 3. Add Tx (+ Center Elevated) -->
+            <button onclick="openAddTxModal()" class="p-1 -mt-5 flex flex-col items-center">
+                <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 ring-4 ring-white active:scale-95 transition-transform">
+                    <i class="fa-solid fa-plus text-xl"></i>
+                </div>
+                <span class="mt-0.5 text-blue-600 font-bold">Add</span>
+            </button>
 
-    function closeTxModal() { document.getElementById('txModal').classList.add('hidden'); }
+            <!-- 4. Cash Out -->
+            <button onclick="switchTab('cashout')" id="tab-cashout" class="p-1 hover:text-blue-600 flex flex-col items-center">
+                <i class="fa-solid fa-circle-arrow-up text-lg text-rose-500 mb-0.5"></i>
+                <span>Cash Out</span>
+            </button>
 
-    function toggleFormFields() {
-      const type = document.getElementById('tx-type').value;
-      const cashoutGroup = document.getElementById('cashout-status-group');
-      const refReqText = document.getElementById('ref-req-text');
+            <!-- 5. Notes -->
+            <button onclick="switchTab('notes')" id="tab-notes" class="p-1 hover:text-blue-600 flex flex-col items-center">
+                <i class="fa-solid fa-sticky-note text-lg text-amber-500 mb-0.5"></i>
+                <span>Notes</span>
+            </button>
 
-      if (type === 'cashout') {
-        cashoutGroup.classList.remove('hidden');
-      } else {
-        cashoutGroup.classList.add('hidden');
-      }
+            <!-- 6. Search -->
+            <button onclick="switchTab('search')" id="tab-search" class="p-1 hover:text-blue-600 flex flex-col items-center">
+                <i class="fa-solid fa-magnifying-glass text-lg text-indigo-500 mb-0.5"></i>
+                <span>Search</span>
+            </button>
+        </div>
+    </nav>
 
-      if (type === 'cashin' || type === 'cashout') {
-        refReqText.classList.remove('hidden');
-      } else {
-        refReqText.classList.add('hidden');
-      }
-    }
+    <!-- MODAL: ADD TRANSACTION (WITH AUTO-FILL OCR CAMERA/GALLERY) -->
+    <div id="add-tx-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-blue-600"></i> New Transaction
+                </h3>
+                <button onclick="closeAddTxModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
 
-    function setFilter(filter) {
-      state.currentFilter = filter;
-      ['all', 'cashin', 'cashout', 'load', 'payment', 'capital'].forEach(f => {
-        const btn = document.getElementById('tab-' + f);
-        if (f === filter) {
-          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white whitespace-nowrap';
-        } else {
-          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 whitespace-nowrap';
+            <!-- OCR / RECEIPT SCANNER ATTACHMENT BOX -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-3.5 rounded-2xl border border-blue-100 space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> Auto-Fill from Receipt
+                    </span>
+                    <span id="ocr-status" class="text-[10px] text-blue-600 font-medium hidden">Processing image...</span>
+                </div>
+                
+                <p class="text-[11px] text-slate-600">Take a photo or upload a receipt screenshot to automatically detect <b>Date</b>, <b>Amount</b>, and <b>Reference No.</b></p>
+
+                <div class="flex gap-2 pt-1">
+                    <label class="flex-1 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm transition">
+                        <i class="fa-solid fa-camera text-blue-600"></i> Camera / Photo
+                        <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleOCRScan(event)">
+                    </label>
+                    <label class="flex-1 bg-white hover:bg-blue-50 text-indigo-700 border border-indigo-200 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm transition">
+                        <i class="fa-solid fa-image text-indigo-600"></i> Gallery
+                        <input type="file" accept="image/*" class="hidden" onchange="handleOCRScan(event)">
+                    </label>
+                </div>
+
+                <!-- Preview Box -->
+                <div id="receipt-preview-box" class="hidden mt-2 p-2 bg-white rounded-xl border border-slate-200 flex items-center gap-3">
+                    <img id="receipt-img-preview" class="w-12 h-12 object-cover rounded-lg border" src="" alt="Receipt">
+                    <div class="flex-1 text-[11px]">
+                        <p class="font-bold text-slate-700">Receipt Attached</p>
+                        <p id="ocr-detected-info" class="text-emerald-600 font-medium">Scanned successfully</p>
+                    </div>
+                    <button onclick="removeReceipt()" class="text-slate-400 hover:text-rose-500 p-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FORM FIELDS -->
+            <form id="tx-form" onsubmit="saveTransaction(event)" class="space-y-3">
+                <!-- Type & Wallet -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Transaction Type</label>
+                        <select id="tx-type" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                            <option value="Cash In">📥 Cash In (+ Fund)</option>
+                            <option value="Cash Out">📤 Cash Out (- Fund)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Select Wallet</label>
+                        <select id="tx-wallet" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Amount & Date/Time -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Amount (₱)</label>
+                        <input type="number" step="0.01" id="tx-amount" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Date & Time</label>
+                        <input type="datetime-local" id="tx-datetime" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- Reference Number -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Reference Number</label>
+                    <input type="text" id="tx-ref" placeholder="e.g. 100293849102" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Particular / Note -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Particular / Note</label>
+                    <input type="text" id="tx-note" placeholder="e.g. GCash Transfer / Payment for bills" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl text-sm shadow-md hover:from-blue-700 hover:to-indigo-700 transition">
+                    Save Transaction
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: EDIT WALLET FUND -->
+    <div id="edit-wallet-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-blue-600"></i> Edit Wallet Details
+                </h3>
+                <button onclick="closeEditWalletModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="edit-wallet-form" onsubmit="saveWalletEdit(event)" class="space-y-3">
+                <input type="hidden" id="edit-wallet-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Wallet Name</label>
+                    <input type="text" id="edit-wallet-name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Account Number / Details</label>
+                    <input type="text" id="edit-wallet-acc" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Current Balance / Fund (₱)</label>
+                    <input type="number" step="0.01" id="edit-wallet-balance" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-emerald-600">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditWalletModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow hover:bg-blue-700">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- INITIAL DATA & STATE ---
+        const DEFAULT_WALLETS = [
+            { id: 'gcash1', name: 'GCash #1', account: '0917****123', balance: 5000.00, color: 'from-blue-500 to-blue-600', icon: 'fa-mobile-screen' },
+            { id: 'gcash2', name: 'GCash #2', account: '0998****567', balance: 2500.00, color: 'from-blue-600 to-indigo-600', icon: 'fa-mobile-screen' },
+            { id: 'maya', name: 'Maya', account: '0918****890', balance: 3200.50, color: 'from-emerald-500 to-teal-600', icon: 'fa-wallet' },
+            { id: 'peddlr', name: 'Peddlr', account: 'Store POS', balance: 1850.00, color: 'from-amber-500 to-orange-600', icon: 'fa-store' },
+            { id: 'metrobank', name: 'Metrobank', account: '1234-****-89', balance: 12400.75, color: 'from-indigo-700 to-purple-800', icon: 'fa-building-columns' }
+        ];
+
+        let wallets = JSON.parse(localStorage.getItem('ew_wallets')) || DEFAULT_WALLETS;
+        let transactions = JSON.parse(localStorage.getItem('ew_transactions')) || [];
+        let notes = JSON.parse(localStorage.getItem('ew_notes')) || [];
+        let currentTab = 'main'; // 'main', 'cashin', 'cashout', 'notes', 'search'
+        let currentReceiptData = null;
+
+        // --- INIT APP ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderWallets();
+            populateWalletSelect();
+            renderCurrentView();
+            setTodayDateTime();
+        });
+
+        function saveStorage() {
+            localStorage.setItem('ew_wallets', JSON.stringify(wallets));
+            localStorage.setItem('ew_transactions', JSON.stringify(transactions));
+            localStorage.setItem('ew_notes', JSON.stringify(notes));
+            renderWallets();
         }
-      });
-      renderLogs();
-    }
 
-    // RECEIPT DETAILS POPUP MODAL
-    function openReceiptModal(id) {
-      const tx = state.transactions.find(t => t.id === id);
-      if (!tx) return;
+        function setTodayDateTime() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('tx-datetime').value = now.toISOString().slice(0,16);
+        }
 
-      const amt = parseFloat(tx.amount) || 0;
-      const fee = parseFloat(tx.fee) || 0;
+        // --- RENDER WALLETS ---
+        function renderWallets() {
+            const container = document.getElementById('wallets-container');
+            let total = 0;
+            container.innerHTML = '';
 
-      document.getElementById('rcpt-title').innerText = tx.type.toUpperCase() + ' RECEIPT';
-      document.getElementById('rcpt-ref').innerText = tx.ref || 'N/A';
-      document.getElementById('rcpt-date').innerText = tx.timestamp || 'Just Now';
-      document.getElementById('rcpt-wallet').innerText = tx.wallet.toUpperCase();
-      document.getElementById('rcpt-phone').innerText = tx.phone || 'N/A';
-      document.getElementById('rcpt-amount').innerText = formatPHP(amt);
-      document.getElementById('rcpt-fee').innerText = formatPHP(fee);
-      document.getElementById('rcpt-total').innerText = formatPHP(amt + fee);
+            wallets.forEach(w => {
+                total += parseFloat(w.balance || 0);
+                const card = document.createElement('div');
+                card.className = `bg-gradient-to-br ${w.color} text-white p-3 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-24`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start z-10">
+                        <div>
+                            <p class="text-[10px] uppercase font-bold tracking-wider opacity-80">${w.name}</p>
+                            <p class="text-[10px] opacity-75 font-mono">${w.account}</p>
+                        </div>
+                        <button onclick="openEditWalletModal('${w.id}')" class="w-6 h-6 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-xs transition">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                    </div>
+                    <div class="z-10">
+                        <span class="text-xs opacity-80">₱</span>
+                        <span class="text-base font-black tracking-tight">${parseFloat(w.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <i class="fa-solid ${w.icon} absolute -right-2 -bottom-2 text-5xl opacity-15"></i>
+                `;
+                container.appendChild(card);
+            });
 
-      document.getElementById('receiptModal').classList.remove('hidden');
-    }
+            document.getElementById('total-balance').textContent = '₱' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
 
-    function closeReceiptModal() { document.getElementById('receiptModal').classList.add('hidden'); }
+        function populateWalletSelect() {
+            const select = document.getElementById('tx-wallet');
+            select.innerHTML = '';
+            wallets.forEach(w => {
+                const opt = document.createElement('option');
+                opt.value = w.id;
+                opt.textContent = `${w.name} (₱${parseFloat(w.balance).toFixed(2)})`;
+                select.appendChild(opt);
+            });
+        }
 
-    // SIMULATED OCR RECEIPT SCANNING
-    function simulateReceiptScan() {
-      alert('📷 Camera Scanner Launched: Scanning Receipt via OCR...');
-      setTimeout(() => {
-        openTxModal();
-        document.getElementById('tx-type').value = 'load';
-        document.getElementById('tx-amount').value = '100.00';
-        document.getElementById('tx-fee').value = '3.00';
-        document.getElementById('tx-ref').value = 'OCR_' + Math.floor(Math.random() * 899999 + 100000);
-        document.getElementById('tx-phone').value = '0917' + Math.floor(Math.random() * 8999999 + 1000000);
-        toggleFormFields();
-      }, 600);
-    }
+        // --- EDIT WALLET MODAL LOGIC ---
+        function openEditWalletModal(id) {
+            const wallet = wallets.find(w => w.id === id);
+            if(!wallet) return;
+            document.getElementById('edit-wallet-id').value = wallet.id;
+            document.getElementById('edit-wallet-name').value = wallet.name;
+            document.getElementById('edit-wallet-acc').value = wallet.account;
+            document.getElementById('edit-wallet-balance').value = wallet.balance;
+            document.getElementById('edit-wallet-modal').classList.remove('hidden');
+        }
 
-    // NOTES & WALLET RENAME
-    function openNotesModal() { document.getElementById('notesModal').classList.remove('hidden'); }
-    function closeNotesModal() { document.getElementById('notesModal').classList.add('hidden'); }
-    function saveNotes() { localStorage.setItem('wallet_tracker_notes', document.getElementById('shop-notes').value); }
+        function closeEditWalletModal() {
+            document.getElementById('edit-wallet-modal').classList.add('hidden');
+        }
 
-    function editWalletName(key) {
-      const newName = prompt('Enter new name for ' + state.wallets[key].name + ':', state.wallets[key].name);
-      if (newName) {
-        state.wallets[key].name = newName;
-        saveState();
-      }
-    }
+        function saveWalletEdit(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-wallet-id').value;
+            const wallet = wallets.find(w => w.id === id);
+            if(wallet) {
+                wallet.name = document.getElementById('edit-wallet-name').value;
+                wallet.account = document.getElementById('edit-wallet-acc').value;
+                wallet.balance = parseFloat(document.getElementById('edit-wallet-balance').value) || 0;
+                saveStorage();
+                populateWalletSelect();
+                closeEditWalletModal();
+            }
+        }
 
-    function toggleSyncModal() {
-      alert('⚡ Upstash Redis Sync Active:\nThis web app state is ready to auto-sync with up to 5 mobile devices via REST endpoint API key.');
-    }
+        // --- NAVIGATION TABS LOGIC ---
+        function switchTab(tab) {
+            currentTab = tab;
+            // Update active styles
+            ['main', 'cashin', 'cashout', 'notes', 'search'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if(btn) {
+                    if(t === tab) {
+                        btn.classList.add('text-blue-600', 'font-bold');
+                        btn.classList.remove('text-slate-500');
+                    } else {
+                        btn.classList.remove('text-blue-600', 'font-bold');
+                        btn.classList.add('text-slate-500');
+                    }
+                }
+            });
 
-    function formatPHP(val) {
-      return '₱' + (parseFloat(val) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-  </script>
+            // Toggle Search Bar
+            const searchBar = document.getElementById('search-bar-container');
+            if(tab === 'search') {
+                searchBar.classList.remove('hidden');
+                document.getElementById('search-input').focus();
+            } else {
+                searchBar.classList.add('hidden');
+            }
+
+            // Toggle Notes Area
+            const notesContainer = document.getElementById('notes-view-container');
+            if(tab === 'notes') {
+                notesContainer.classList.remove('hidden');
+                renderNotes();
+            } else {
+                notesContainer.classList.add('hidden');
+            }
+
+            renderCurrentView();
+        }
+
+        // --- RENDER TRANSACTIONS / VIEWS ---
+        function renderCurrentView() {
+            const list = document.getElementById('transaction-list');
+            const title = document.getElementById('view-title');
+            const count = document.getElementById('record-count');
+            const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+
+            let filtered = [...transactions];
+
+            // Title & Tab Filter
+            if(currentTab === 'main') {
+                title.innerHTML = `<i class="fa-solid fa-list-ul text-blue-600"></i> Main Transaction Log`;
+            } else if(currentTab === 'cashin') {
+                title.innerHTML = `<i class="fa-solid fa-circle-arrow-down text-emerald-500"></i> Cash In Records`;
+                filtered = filtered.filter(t => t.type === 'Cash In');
+            } else if(currentTab === 'cashout') {
+                title.innerHTML = `<i class="fa-solid fa-circle-arrow-up text-rose-500"></i> Cash Out Records`;
+                filtered = filtered.filter(t => t.type === 'Cash Out');
+            } else if(currentTab === 'notes') {
+                title.innerHTML = `<i class="fa-solid fa-sticky-note text-amber-500"></i> Notes & Reminders`;
+                list.innerHTML = '';
+                count.textContent = `${notes.length} notes`;
+                return;
+            } else if(currentTab === 'search') {
+                title.innerHTML = `<i class="fa-solid fa-magnifying-glass text-indigo-500"></i> Search Results`;
+            }
+
+            // Apply Search Query if present
+            if(searchVal) {
+                filtered = filtered.filter(t => 
+                    (t.ref && t.ref.toLowerCase().includes(searchVal)) ||
+                    (t.amount && t.amount.toString().includes(searchVal)) ||
+                    (t.note && t.note.toLowerCase().includes(searchVal)) ||
+                    (t.walletName && t.walletName.toLowerCase().includes(searchVal))
+                );
+            }
+
+            count.textContent = `${filtered.length} records`;
+            list.innerHTML = '';
+
+            if(filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="fa-regular fa-folder-open text-3xl mb-2 block"></i>
+                        <p class="text-xs">No transactions found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Render Items (Sorted by Date Newest First)
+            filtered.sort((a,b) => new Date(b.datetime) - new Date(a.datetime)).forEach(t => {
+                const isCashIn = t.type === 'Cash In';
+                const item = document.createElement('div');
+                item.className = 'p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:bg-slate-100/80 transition';
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl ${isCashIn ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'} flex items-center justify-center font-bold text-sm shrink-0">
+                            <i class="fa-solid ${isCashIn ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-bold text-slate-800">${t.walletName}</span>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold ${isCashIn ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${t.type}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 line-clamp-1">${t.note || 'No description'}</p>
+                            <div class="flex gap-2 text-[10px] text-slate-400 font-mono mt-0.5">
+                                <span>Ref: ${t.ref || 'N/A'}</span>
+                                <span>•</span>
+                                <span>${new Date(t.datetime).toLocaleString('en-US', {month:'short', day:'numeric', hour:'numeric', minute:'numeric', hour12:true})}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <p class="text-xs font-black ${isCashIn ? 'text-emerald-600' : 'text-slate-800'}">
+                            ${isCashIn ? '+' : '-'}₱${parseFloat(t.amount).toLocaleString('en-US', {minimumFractionDigits:2})}
+                        </p>
+                        <button onclick="deleteTx('${t.id}')" class="text-slate-300 hover:text-rose-500 text-xs mt-1 p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            renderCurrentView();
+        }
+
+        // --- ADD TRANSACTION MODAL & OCR AUTO-FILL ---
+        function openAddTxModal() {
+            setTodayDateTime();
+            document.getElementById('add-tx-modal').classList.remove('hidden');
+        }
+
+        function closeAddTxModal() {
+            document.getElementById('add-tx-modal').classList.add('hidden');
+            removeReceipt();
+        }
+
+        function removeReceipt() {
+            currentReceiptData = null;
+            document.getElementById('receipt-preview-box').classList.add('hidden');
+            document.getElementById('ocr-status').classList.add('hidden');
+        }
+
+        // --- OCR CAMERA / GALLERY AUTO-FILL SYSTEM ---
+        async function handleOCRScan(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            // Show Preview Box & Loading State
+            const previewBox = document.getElementById('receipt-preview-box');
+            const previewImg = document.getElementById('receipt-img-preview');
+            const ocrStatus = document.getElementById('ocr-status');
+            const ocrInfo = document.getElementById('ocr-detected-info');
+
+            previewImg.src = URL.createObjectURL(file);
+            previewBox.classList.remove('hidden');
+            ocrStatus.classList.remove('hidden');
+            ocrStatus.textContent = '🔍 Scanning receipt details...';
+            ocrInfo.textContent = 'Processing Optical Character Recognition...';
+
+            try {
+                // Perform OCR using Tesseract.js
+                const worker = await Tesseract.createWorker('eng');
+                const ret = await worker.recognize(file);
+                await worker.terminate();
+
+                const text = ret.data.text;
+                console.log('Scanned OCR Text:\n', text);
+
+                // Auto-Extract Date & Time, Amount, Reference Number
+                const extracted = parseReceiptText(text);
+
+                // Auto-fill form fields
+                if(extracted.amount) {
+                    document.getElementById('tx-amount').value = extracted.amount;
+                }
+                if(extracted.ref) {
+                    document.getElementById('tx-ref').value = extracted.ref;
+                }
+                if(extracted.datetime) {
+                    document.getElementById('tx-datetime').value = extracted.datetime;
+                }
+
+                ocrStatus.textContent = '✅ Auto-filled successfully!';
+                ocrInfo.textContent = `Extracted: Amount: ₱${extracted.amount || '?'}, Ref: ${extracted.ref || '?'}`;
+
+            } catch (err) {
+                console.error(err);
+                ocrStatus.textContent = '⚠️ Could not read clearly';
+                ocrInfo.textContent = 'Photo attached. Please verify or manually enter details.';
+            }
+        }
+
+        // PARSER FOR GCASH / MAYA / BANK RECEIPTS
+        function parseReceiptText(text) {
+            let res = { amount: null, ref: null, datetime: null };
+
+            // 1. Extract Amount (e.g., PHP 1,500.00, P500.00, ₱200.00, Amount: 1500)
+            const amountMatches = text.match(/(?:PHP|P|₱|Amount|Total)[:\s]*([0-9,]+\.[0-9]{2})/i) ||
+                                  text.match(/([0-9,]+\.[0-9]{2})/);
+            if(amountMatches && amountMatches[1]) {
+                const cleanedAmount = amountMatches[1].replace(/,/g, '');
+                if(!isNaN(cleanedAmount) && parseFloat(cleanedAmount) > 0) {
+                    res.amount = parseFloat(cleanedAmount);
+                }
+            }
+
+            // 2. Extract Reference Number (e.g., Ref No: 10092834, Reference No. 928341, 10-12 digit numbers)
+            const refMatch = text.match(/(?:Ref|Reference|Txn|Transaction|ID|No)[\.\s#:]*([0-9]{7,13})/i) ||
+                             text.match(/\b([0-9]{10,13})\b/);
+            if(refMatch && refMatch[1]) {
+                res.ref = refMatch[1];
+            }
+
+            // 3. Extract Date & Time (e.g., Aug 13, 2026 02:45 PM or 2026-08-13)
+            const dateMatch = text.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4}\b/i) ||
+                              text.match(/\d{4}[-\/]\d{2}[-\/]\d{2}/);
+            if(dateMatch) {
+                try {
+                    const parsedDate = new Date(dateMatch[0]);
+                    if(!isNaN(parsedDate)) {
+                        parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+                        res.datetime = parsedDate.toISOString().slice(0,16);
+                    }
+                } catch(e){}
+            }
+
+            return res;
+        }
+
+        // --- SAVE TRANSACTION ---
+        function saveTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('tx-type').value;
+            const walletId = document.getElementById('tx-wallet').value;
+            const amount = parseFloat(document.getElementById('tx-amount').value);
+            const datetime = document.getElementById('tx-datetime').value;
+            const ref = document.getElementById('tx-ref').value;
+            const note = document.getElementById('tx-note').value;
+
+            const wallet = wallets.find(w => w.id === walletId);
+            if(!wallet) return;
+
+            // Update Wallet Balance
+            if(type === 'Cash In') {
+                wallet.balance += amount;
+            } else {
+                wallet.balance -= amount;
+            }
+
+            // Create New Transaction Record
+            const newTx = {
+                id: 'tx_' + Date.now(),
+                type,
+                walletId,
+                walletName: wallet.name,
+                amount,
+                datetime,
+                ref,
+                note
+            };
+
+            transactions.unshift(newTx);
+            saveStorage();
+            closeAddTxModal();
+            renderCurrentView();
+
+            // Reset Form
+            document.getElementById('tx-form').reset();
+        }
+
+        function deleteTx(id) {
+            if(!confirm('Are you sure you want to delete this transaction?')) return;
+            const tx = transactions.find(t => t.id === id);
+            if(tx) {
+                // Revert Wallet Balance
+                const wallet = wallets.find(w => w.id === tx.walletId);
+                if(wallet) {
+                    if(tx.type === 'Cash In') {
+                        wallet.balance -= tx.amount;
+                    } else {
+                        wallet.balance += tx.amount;
+                    }
+                }
+                transactions = transactions.filter(t => t.id !== id);
+                saveStorage();
+                renderCurrentView();
+            }
+        }
+
+        // --- NOTES SYSTEM ---
+        function addNote() {
+            const input = document.getElementById('new-note-input');
+            const val = input.value.trim();
+            if(!val) return;
+
+            notes.unshift({
+                id: 'note_' + Date.now(),
+                text: val,
+                date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})
+            });
+            input.value = '';
+            saveStorage();
+            renderNotes();
+        }
+
+        function deleteNote(id) {
+            notes = notes.filter(n => n.id !== id);
+            saveStorage();
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const container = document.getElementById('notes-list');
+            container.innerHTML = '';
+            if(notes.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No notes added yet.</p>`;
+                return;
+            }
+            notes.forEach(n => {
+                const div = document.createElement('div');
+                div.className = 'p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex justify-between items-center text-xs';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-medium text-slate-800">${n.text}</p>
+                        <span class="text-[10px] text-amber-600 font-mono">${n.date}</span>
+                    </div>
+                    <button onclick="deleteNote('${n.id}')" class="text-amber-400 hover:text-rose-500 p-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
 </body>
 </html>
