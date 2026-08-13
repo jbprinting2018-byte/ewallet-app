@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>E-Wallet Tracker Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <!-- ISINAMA ANG FIREBASE SCRIPTS -->
+    <script src="https://tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <script src="https://jsdelivr.net"></script>
+    <!-- FIREBASE REALTME LIBRARIES -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
@@ -108,7 +108,7 @@
                 <button onclick="setTimeFilter('week')" id="filter-week" class="flex-1 py-1.5 rounded-lg text-slate-500 transition">This Week</button>
             </div>
 
-            <!-- Notes Container (GUMA-GANA NA ANG ADD) -->
+            <!-- Notes Container -->
             <div id="notes-view-container" class="space-y-3 mt-2">
                 <div class="flex gap-2">
                     <input type="text" id="new-note-input" placeholder="Add a quick note or reminder..." class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
@@ -143,6 +143,29 @@
             </div>
         </section>
     </main>
+    <!-- ADD WALLET MODAL POP-UP FORM -->
+    <div id="wallet-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-extrabold text-sm text-slate-800 uppercase tracking-wider">➕ Add New E-Wallet</h3>
+                <button onclick="closeAddWalletModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Wallet Name</label>
+                    <input type="text" id="wallet-name-input" placeholder="e.g., GCash, PayMaya" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Current Balance</label>
+                    <input type="number" id="wallet-balance-input" placeholder="0.00" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeAddWalletModal()" class="flex-1 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="saveWalletToFirebase()" class="flex-1 py-2 bg-pink-600 text-white rounded-xl text-xs font-bold hover:bg-pink-700 shadow-md">Save Wallet</button>
+            </div>
+        </div>
+    </div>
 
     <!-- BOTTOM NAVIGATION BAR -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-40 py-2">
@@ -150,101 +173,108 @@
             <button class="flex flex-col items-center gap-1 text-pink-600"><i class="fa-solid fa-list-check text-lg"></i>Main Log</button>
             <button class="flex flex-col items-center gap-1 text-emerald-600"><i class="fa-solid fa-arrow-down-long text-lg"></i>Cash In</button>
             <button onclick="openAddWalletModal()" class="w-12 h-12 bg-gradient-to-tr from-pink-600 to-purple-600 text-white rounded-full flex items-center justify-center text-xl shadow-md transform -translate-y-4 border-4 border-white"><i class="fa-solid fa-plus"></i></button>
+            <button class="flex flex-col items-center gap-1 text-rose-600"><i class="fa-solid fa-arrow-up-long text-lg"></i>Cash Out</button>
+            <button class="flex flex-col items-center gap-1 text-amber-600"><i class="fa-solid fa-file-lines text-lg"></i>Notes</button>
+        </div>
+    </nav>
 
-                <!-- ================================================================= -->
-    <!-- MGA LINK AT LOGIC PARA SA FIREBASE DATABASE AT MGA BUTTONS -->
-    <!-- ================================================================= -->
-    
-    <!-- 1. I-load muna ang mga kailangang script ng Firebase SDK -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
-
+    <!-- PROGRAM LOGIC -->
     <script>
-        // 2. Koneksyon sa iyong Firebase Realtime Database sa Singapore
+        // 1. Firebase System Config
         const firebaseConfig = {
             databaseURL: "https://firebasedatabase.app"
         };
-        
-        // I-initialize ang Firebase app
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // 3. Pagpapagana sa ADD Button para sa Quick Notes
+        // 2. Text/Quick Notes Functions
         function addNote() {
             const noteInput = document.getElementById('new-note-input');
             const noteText = noteInput.value.trim();
+            if (noteText === "") return alert("Maglagay ng mensahe!");
 
-            // Huwag ituloy kapag walang nakasulat
-            if (noteText === "") {
-                alert("Mangyaring maglagay ng mensahe o paalala bago i-click ang Add!");
-                return;
-            }
-
-            // Pag-save ng data sa Firebase sa ilalim ng table na "notes"
             database.ref('notes').push({
                 text: noteText,
                 timestamp: Date.now()
-            })
-            .then(() => {
-                noteInput.value = ""; // Linisin ang kahon kapag matagumpay ang pag-save
-            })
-            .catch((error) => {
-                alert("Nagkaroon ng problema sa pag-save: " + error.message);
-            });
+            }).then(() => { noteInput.value = ""; });
         }
 
-        // 4. Pagpapakita ng mga Nai-save na Data (Automatic Listener)
         database.ref('notes').on('value', (snapshot) => {
             const notesList = document.getElementById('notes-list');
             const recordCount = document.getElementById('record-count');
-            
-            // Burahin muna ang dating nakalista para hindi umulit
             notesList.innerHTML = "";
-            
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                let totalRecords = 0;
-                
-                // Isa-isang ilabas ang bawat note mula sa database
+                let count = 0;
                 Object.keys(data).forEach((key) => {
-                    totalRecords++;
+                    count++;
                     const item = data[key];
-                    const noteElement = document.createElement('div');
-                    
-                    noteElement.className = "flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100 shadow-sm text-xs font-medium text-slate-700";
-                    noteElement.innerHTML = `
-                        <span>${item.text}</span>
-                        <button onclick="deleteNote('${key}')" class="text-rose-500 hover:text-rose-700 p-1">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    `;
-                    notesList.appendChild(noteElement);
+                    const div = document.createElement('div');
+                    div.className = "flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100 shadow-sm mt-1 text-xs font-medium text-slate-700";
+                    div.innerHTML = `<span>${item.text}</span><button onclick="deleteNote('${key}')" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button>`;
+                    notesList.appendChild(div);
                 });
-                
-                // I-update ang bilang ng records sa itaas
-                recordCount.innerText = `${totalRecords} records`;
+                recordCount.innerText = `${count} records`;
             } else {
-                // Mensahe kapag walang laman ang database
-                notesList.innerHTML = `<div class="text-slate-400 py-4 text-center text-xs">No quick notes stored.</div>`;
+                notesList.innerHTML = `<div class="text-slate-400 py-4 text-center">No quick notes stored.</div>`;
                 recordCount.innerText = `0 records`;
             }
         });
 
-        // 5. Pagpapagana sa Pindutan ng Pagbura (Trash Icon)
-        function deleteNote(key) {
-            if (confirm("Sigurado ka bang gusto mo itong burahin?")) {
-                database.ref('notes/' + key).remove();
-            }
+        function deleteNote(key) { database.ref('notes/' + key).remove(); }
+
+        // 3. E-Wallet Modal Controllers
+        function openAddWalletModal() { document.getElementById('wallet-modal').classList.remove('hidden'); }
+        function closeAddWalletModal() {
+            document.getElementById('wallet-modal').classList.add('hidden');
+            document.getElementById('wallet-name-input').value = "";
+            document.getElementById('wallet-balance-input').value = "";
         }
 
-        // 6. Pansamantalang Tagasalo para sa Ibang Pindutan (Para hindi mag-error ang interface)
-        function openAddWalletModal() { 
-            alert("Naka-link na ang modal button! Handa na itong lagyan ng wallet input form."); 
+        function saveWalletToFirebase() {
+            const nameInput = document.getElementById('wallet-name-input');
+            const balanceInput = document.getElementById('wallet-balance-input');
+            const name = nameInput.value.trim();
+            const balance = parseFloat(balanceInput.value) || 0;
+
+            if (name === "") return alert("Ilagay ang pangalan ng E-Wallet!");
+
+            database.ref('wallets').push({
+                name: name,
+                balance: balance,
+                timestamp: Date.now()
+            }).then(() => { closeAddWalletModal(); });
         }
-        function openEditCashModal() { 
-            alert("Naka-link na ang Edit Cash button!"); 
-        }
-        function setTimeFilter(type) { 
-            alert("Filter clicked: " + type); 
-        }
+
+        database.ref('wallets').on('value', (snapshot) => {
+            const container = document.getElementById('wallets-container');
+            const totalBalanceEl = document.getElementById('total-balance');
+            container.innerHTML = "";
+            let totalCapital = 0;
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                Object.keys(data).forEach((key) => {
+                    const wallet = data[key];
+                    totalCapital += wallet.balance;
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-3 rounded-2xl border border-pink-100 shadow-sm flex justify-between items-center";
+                    card.innerHTML = `<div><p class="text-xs font-black text-slate-700">${wallet.name}</p><p class="text-[11px] font-bold text-pink-600 mt-1">₱${wallet.balance.toLocaleString('en-US', {minimumFractionDigits:2})}</p></div><button onclick="deleteWallet('${key}')" class="text-slate-300 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button>`;
+                    container.appendChild(card);
+                });
+            } else {
+                container.innerHTML = `<div class="col-span-2 text-center text-[11px] text-slate-400 py-2">No wallets added yet.</div>`;
+            }
+            totalBalanceEl.innerText = `₱${totalCapital.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        });
+
+        function deleteWallet(key) { if (confirm("Gusto mo bang burahin ito?")) database.ref('wallets/' + key).remove(); }
+
+        // Standby utilities
+        function openEditCashModal() { alert("Edit Cash feature ready!"); }
+        function setTimeFilter(type) { console.log("Filtered:", type); }
     </script>
+</body>
+</html>
+
+                    
