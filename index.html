@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>E-Wallet Tracker Pro</title>
-    <!-- MGA SCRIPT PARA SA DATABASE CONNECTION -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
@@ -18,11 +17,12 @@
         .box-white { background: white; padding: 15px; border-radius: 16px; border: 1px solid #fce7f3; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 15px; }
         .input-text { width: 70%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; }
         .btn-pink { background-color: #db2777; color: white; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .wallet-grid { display: grid; grid-cols: 2; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .wallet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .wallet-item { background: white; padding: 12px; border-radius: 12px; border: 1px solid #fce7f3; display: flex; justify-content: space-between; align-items: center; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; items-center: center; justify-content: center; z-index: 100; padding: 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
         .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 320px; margin: auto; margin-top: 15%; border: 1px solid #cbd5e1; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e2e8f0; padding: 12px; display: flex; justify-content: space-around; font-size: 12px; font-weight: bold; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e2e8f0; padding: 12px; display: flex; justify-content: space-around; font-size: 12px; font-weight: bold; z-index: 90; }
+        .select-style { width: 95%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: white; }
     </style>
 </head>
 <body>
@@ -48,11 +48,11 @@
         <!-- CARDS ROW -->
         <div class="card-row">
             <div class="card-green">
-                <span style="font-size: 10px; uppercase; font-weight: bold; opacity: 0.9;">CASH BALANCE</span>
+                <span style="font-size: 10px; font-weight: bold; opacity: 0.9;">CASH BALANCE</span>
                 <div style="font-size: 18px; font-weight: 900; margin-top: 15px;">₱<span id="cash-balance">0.00</span></div>
             </div>
             <div class="card-orange">
-                <span style="font-size: 10px; uppercase; font-weight: bold; opacity: 0.9;">TOTAL PROFIT</span>
+                <span style="font-size: 10px; font-weight: bold; opacity: 0.9;">TOTAL PROFIT</span>
                 <div style="font-size: 18px; font-weight: 900; margin-top: 15px;">₱<span id="total-profit">0.00</span></div>
             </div>
         </div>
@@ -66,6 +66,12 @@
             <div class="wallet-grid" id="wallets-container"></div>
         </div>
 
+        <!-- TRANSACTION LOGS LIST -->
+        <div class="section-title">Transaction History</div>
+        <div class="box-white" id="transaction-history-list" style="font-size: 12px; color: #64748b; max-height: 150px; overflow-y: auto; padding: 10px;">
+            Walang nakaimbak na transaction.
+        </div>
+
         <!-- QUICK NOTES SECTION -->
         <div class="section-title">Quick Notes & Reminders <span id="record-count" style="font-size: 10px; color: #db2777;">0 records</span></div>
         <div class="box-white">
@@ -75,23 +81,8 @@
             </div>
             <div id="notes-list" style="margin-top: 10px; font-size: 12px; color: #64748b;">No quick notes stored.</div>
         </div>
-
-        <!-- ANALYTICS SUMMARY -->
-        <div class="section-title">Quick Analytics Summary</div>
-        <div class="card-row" style="font-size: 12px; font-weight: bold; color: #475569;">
-            <div class="box-white" style="flex: 1; margin: 0; padding: 10px;">
-                <div style="color: #db2777; font-size: 10px; margin-bottom: 5px;">📅 TODAY</div>
-                <div style="color: #16a34a;">In: ₱0.00</div>
-                <div style="color: #dc2626;">Out: ₱0.00</div>
-            </div>
-            <div class="box-white" style="flex: 1; margin: 0; padding: 10px;">
-                <div style="color: #7c3aed; font-size: 10px; margin-bottom: 5px;">📅 THIS WEEK</div>
-                <div style="color: #16a34a;">In: ₱0.00</div>
-                <div style="color: #dc2626;">Out: ₱0.00</div>
-            </div>
-        </div>
     </div>
-    <!-- POP-UP MODAL FORM -->
+    <!-- ADD WALLET MODAL POP-UP FORM -->
     <div id="wallet-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
@@ -113,13 +104,39 @@
         </div>
     </div>
 
+    <!-- CASH IN / CASH OUT MODAL FORM -->
+    <div id="tx-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
+                <span id="tx-modal-title" style="font-weight: bold; font-size: 14px;">Transaction</span>
+                <button onclick="closeTxModal()" style="border: none; background: none; font-weight: bold; cursor: pointer; color: #ef4444;">❌</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Piliin ang E-Wallet</label>
+                <select id="tx-wallet-select" class="select-style"></select>
+            </div>
+            <div style="margin-top: 10px;">
+                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Amount (Halaga)</label>
+                <input type="number" id="tx-amount-input" placeholder="0.00" style="width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px;">
+            </div>
+            <div style="margin-top: 10px;">
+                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Service Fee / Patong (Kita)</label>
+                <input type="number" id="tx-fee-input" placeholder="0.00" style="width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px;">
+            </div>
+            <div style="margin-top: 15px; display: flex; gap: 8px; justify-content: flex-end;">
+                <button onclick="closeTxModal()" style="padding: 6px 12px; background: #e2e8f0; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">Cancel</button>
+                <button onclick="saveTransactionToFirebase()" style="padding: 6px 12px; background: #059669; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">Submit</button>
+            </div>
+        </div>
+    </div>
+
     <!-- BOTTOM NAVIGATION -->
     <div class="bottom-nav">
-        <button onclick="alert('Main Log active')" style="color: #db2777; background:none; border:none; font-weight:bold;">📋 Log</button>
-        <button onclick="alert('Cash In clicked')" style="color: #16a34a; background:none; border:none; font-weight:bold;">📥 In</button>
+        <button onclick="document.getElementById('transaction-history-list').scrollIntoView({behavior: 'smooth'})" style="color: #db2777; background:none; border:none; font-weight:bold;">📋 History</button>
+        <button onclick="openTxModal('In')" style="color: #16a34a; background:none; border:none; font-weight:bold;">📥 Cash In</button>
         <button onclick="openAddWalletModal()" style="background: #db2777; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; cursor: pointer; font-weight: bold;">＋</button>
-        <button onclick="alert('Cash Out clicked')" style="color: #dc2626; background:none; border:none; font-weight:bold;">📤 Out</button>
-        <button onclick="alert('Notes view')" style="color: #d97706; background:none; border:none; font-weight:bold;">📝 Notes</button>
+        <button onclick="openTxModal('Out')" style="color: #dc2626; background:none; border:none; font-weight:bold;">📤 Cash Out</button>
+        <button onclick="document.getElementById('new-note-input').focus()" style="color: #d97706; background:none; border:none; font-weight:bold;">📝 Notes</button>
     </div>
 
     <!-- SYSTEM LOGIC SCRIPTS -->
@@ -127,6 +144,9 @@
         const firebaseConfig = { databaseURL: "https://firebasedatabase.app" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
+        let globalWallets = {};
+        let currentTxType = "In";
 
         function addNote() {
             const noteInput = document.getElementById('new-note-input');
@@ -145,13 +165,7 @@
                 Object.keys(data).forEach((key) => {
                     count++;
                     const div = document.createElement('div');
-                    div.style.background = "#f8fafc";
-                    div.style.padding = "8px";
-                    div.style.border = "1px solid #e2e8f0";
-                    div.style.borderRadius = "8px";
-                    div.style.marginTop = "5px";
-                    div.style.display = "flex";
-                    div.style.justifyContent = "between";
+                    div.style.background = "#f8fafc"; div.style.padding = "8px"; div.style.border = "1px solid #e2e8f0"; div.style.borderRadius = "8px"; div.style.marginTop = "5px"; div.style.display = "flex"; div.style.justifyContent = "space-between";
                     div.innerHTML = `<span style="flex:1;">${data[key].text}</span><button onclick="deleteNote('${key}')" style="background:none; border:none; cursor:pointer;">🗑️</button>`;
                     notesList.appendChild(div);
                 });
@@ -180,23 +194,27 @@
         database.ref('wallets').on('value', (snapshot) => {
             const container = document.getElementById('wallets-container');
             const totalBalanceEl = document.getElementById('total-balance');
+            const selectDropdown = document.getElementById('tx-wallet-select');
+            
             container.innerHTML = "";
+            selectDropdown.innerHTML = "";
             let totalCapital = 0;
+            
             if (snapshot.exists()) {
-                const data = snapshot.val();
-                Object.keys(data).forEach((key) => {
-                    totalCapital += data[key].balance;
+                globalWallets = snapshot.val();
+                Object.keys(globalWallets).forEach((key) => {
+                    const w = globalWallets[key];
+                    totalCapital += w.balance;
+                    
                     const card = document.createElement('div');
                     card.className = "wallet-item";
-                    card.style.background = "white";
-                    card.style.padding = "10px";
-                    card.style.borderRadius = "12px";
-                    card.style.border = "1px solid #fce7f3";
-                    card.style.display = "flex";
-                    card.style.justifyContent = "space-between";
-                    card.style.marginTop = "5px";
-                    card.innerHTML = `<div><b style="font-size:12px;">${data[key].name}</b><br><span style="color:#db2777; font-size:11px; font-weight:bold;">₱${data[key].balance.toLocaleString('en-US', {minimumFractionDigits:2})}</span></div><button onclick="deleteWallet('${key}')" style="background:none; border:none; cursor:pointer;">🗑️</button>`;
+                    card.innerHTML = `<div><b style="font-size:12px;">${w.name}</b><br><span style="color:#db2777; font-size:11px; font-weight:bold;">₱${w.balance.toLocaleString('en-US', {minimumFractionDigits:2})}</span></div><button onclick="deleteWallet('${key}')" style="background:none; border:none; cursor:pointer;">🗑️</button>`;
                     container.appendChild(card);
+
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.innerText = w.name;
+                    selectDropdown.appendChild(opt);
                 });
             } else {
                 container.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:#94a3b8; padding:10px;">No wallets added yet.</div>`;
@@ -205,6 +223,81 @@
         });
 
         function deleteWallet(key) { if (confirm("Gusto mo bang burahin ito?")) database.ref('wallets/' + key).remove(); }
+
+        function openTxModal(type) {
+            currentTxType = type;
+            document.getElementById('tx-modal-title').innerText = "Cash " + type + " Form";
+            document.getElementById('tx-modal').style.display = "flex";
+        }
+
+        function closeTxModal() {
+        function openTxModal(type) {
+            currentTxType = type;
+            document.getElementById('tx-modal-title').innerText = "Cash " + type + " Form";
+            document.getElementById('tx-modal').style.display = "flex";
+        }
+
+        function closeTxModal() {
+            document.getElementById('tx-modal').style.display = "none";
+            document.getElementById('tx-amount-input').value = "";
+            document.getElementById('tx-fee-input').value = "";
+        }
+
+        function saveTransactionToFirebase() {
+            const walletKey = document.getElementById('tx-wallet-select').value;
+            const amount = parseFloat(document.getElementById('tx-amount-input').value) || 0;
+            const fee = parseFloat(document.getElementById('tx-fee-input').value) || 0;
+
+            if (!walletKey) return alert("Gumawa muna ng E-Wallet bago mag-transact!");
+            if (amount <= 0) return alert("Maglagay ng tamang halaga!");
+
+            const selectedWallet = globalWallets[walletKey];
+            let newBalance = selectedWallet.balance;
+
+            if (currentTxType === "In") {
+                newBalance += amount;
+            } else {
+                if (amount > selectedWallet.balance) return alert("Kulang ang laman ng iyong " + selectedWallet.name);
+                newBalance -= amount;
+            }
+
+            database.ref('transactions').push({
+                walletName: selectedWallet.name,
+                type: currentTxType,
+                amount: amount,
+                fee: fee,
+                timestamp: Date.now()
+            }).then(() => {
+                database.ref('wallets/' + walletKey).update({ balance: newBalance });
+                closeTxModal();
+            });
+        }
+
+        database.ref('transactions').on('value', (snapshot) => {
+            const listContainer = document.getElementById('transaction-history-list');
+            const totalProfitEl = document.getElementById('total-profit');
+            listContainer.innerHTML = "";
+            
+            let totalProfit = 0;
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                Object.keys(data).reverse().forEach((key) => {
+                    const tx = data[key];
+                    totalProfit += tx.fee;
+
+                    const div = document.createElement('div');
+                    div.style.padding = "6px"; div.style.borderBottom = "1px solid #f1f5f9"; div.style.display = "flex"; div.style.justifyContent = "space-between";
+                    const color = tx.type === "In" ? "#16a34a" : "#dc2626";
+                    div.innerHTML = `<span><b>Cash ${tx.type}</b> (${tx.walletName})</span><span style="color:${color}; font-weight:bold;">₱${tx.amount} (+₱${tx.fee})</span>`;
+                    listContainer.appendChild(div);
+                });
+            } else {
+                listContainer.innerHTML = "Walang nakaimbak na transaction.";
+            }
+            totalProfitEl.innerText = totalProfit.toLocaleString('en-US', {minimumFractionDigits: 2});
+        });
     </script>
 </body>
 </html>
+
