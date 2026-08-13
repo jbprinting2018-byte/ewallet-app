@@ -349,14 +349,15 @@
         // ⚠️ PALITAN NG IYONG FIREBASE CONFIG
         // ==========================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+            const firebaseConfig = {
+    apiKey: "ILAGAY_DITO_ANG_YOUR_API_KEY", // Kunin sa Firebase Project Settings
+    authDomain: "e-wallet-aaecb.firebaseapp.com",
+    databaseURL: "https://e-wallet-aaecb-default-rtdb.firebaseio.com",
+    projectId: "e-wallet-aaecb",
+    storageBucket: "e-wallet-aaecb.appspot.com",
+    messagingSenderId: "166256897604",
+    appId: "1:166256897604:web:cb4072b94347a1e174d611"
+};
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
