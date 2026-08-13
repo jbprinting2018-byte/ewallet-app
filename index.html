@@ -2,301 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Wallet Tracker Pro</title>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
-        body { background-color: #fff1f2; font-family: sans-serif; margin: 0; padding-bottom: 90px; color: #334155; }
-        .header { background: linear-gradient(135deg, #db2777, #7c3aed); color: white; padding: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .container { max-width: 450px; margin: 0 auto; padding: 15px; }
-        .card-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .card-green { background: linear-gradient(135deg, #059669, #0d9488); color: white; padding: 15px; border-radius: 16px; flex: 1; min-height: 90px; }
-        .card-orange { background: linear-gradient(135deg, #d97706, #ea580c); color: white; padding: 15px; border-radius: 16px; flex: 1; min-height: 90px; }
-        .section-title { font-size: 14px; font-weight: bold; text-transform: uppercase; color: #475569; margin: 15px 0 8px 0; display: flex; justify-content: space-between; }
-        .box-white { background: white; padding: 15px; border-radius: 16px; border: 1px solid #fce7f3; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 15px; }
-        .input-text { width: 70%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; }
-        .btn-pink { background-color: #db2777; color: white; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .wallet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .wallet-item { background: white; padding: 12px; border-radius: 12px; border: 1px solid #fce7f3; display: flex; justify-content: space-between; align-items: center; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
-        .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 320px; margin: auto; margin-top: 15%; border: 1px solid #cbd5e1; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e2e8f0; padding: 12px; display: flex; justify-content: space-around; font-size: 12px; font-weight: bold; z-index: 90; }
-        .select-style { width: 95%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: white; }
+        body { background:#fff1f2; font-family:sans-serif; margin:0; padding-bottom:90px; color:#334155; }
+        .header { background:linear-gradient(135deg,#db2777,#7c3aed); color:white; padding:15px; text-align:center; }
+        .container { max-width:450px; margin:0 auto; padding:15px; }
+        .card-row { display:flex; gap:10px; margin-bottom:15px; }
+        .card-green { background:linear-gradient(135deg,#059669,#0d9488); color:white; padding:15px; border-radius:16px; flex:1; }
+        .card-orange { background:linear-gradient(135deg,#d97706,#ea580c); color:white; padding:15px; border-radius:16px; flex:1; }
+        .section-title { font-size:14px; font-weight:bold; text-transform:uppercase; margin:15px 0 8px 0; display:flex; justify-content:space-between; }
+        .box-white { background:white; padding:15px; border-radius:16px; border:1px solid #fce7f3; margin-bottom:15px; }
+        .wallet-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .modal { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:100; }
+        .modal-content { background:white; padding:20px; border-radius:16px; width:280px; margin:auto; border:1px solid #cbd5e1; }
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid #e2e8f0; padding:12px; display:flex; justify-content:space-around; font-weight:bold; }
     </style>
 </head>
 <body>
-
-    <!-- TOP HEADER -->
     <div class="header">
-        <div style="max-width: 450px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; text-align: left;">
-            <div>
-                <h1 style="margin: 0; font-size: 18px; font-weight: 900; letter-spacing: 1px;">💰 E-WALLET TRACKER</h1>
-                <p style="margin: 3px 0 0 0; font-size: 10px; opacity: 0.9;">Smart Financial Log & Store Tracker</p>
-                <p style="margin: 3px 0 0 0; font-size: 9px; color: #4ade80; font-weight: bold;">● Firebase Real-time Active</p>
-            </div>
-            <div style="text-align: right;">
-                <span style="font-size: 9px; text-transform: uppercase; opacity: 0.8; display: block;">Total Capital</span>
-                <span id="total-balance" style="font-size: 18px; font-weight: 900; color: #fde047;">₱0.00</span>
-            </div>
+        <div style="max-width:450px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;">
+            <div><b>💰 E-WALLET TRACKER</b><br><span style="font-size:9px; color:#4ade80;">● Live Cloud Active</span></div>
+            <div style="text-align:right;"><span style="font-size:9px; display:block;">Total Capital</span><span id="total-balance" style="font-size:18px; font-weight:900; color:#fde047;">₱0.00</span></div>
         </div>
     </div>
-
-    <!-- MAIN CONTAINER -->
     <div class="container">
-        
-        <!-- CARDS ROW -->
         <div class="card-row">
-            <div class="card-green">
-                <span style="font-size: 10px; font-weight: bold; opacity: 0.9;">CASH BALANCE</span>
-                <div style="font-size: 18px; font-weight: 900; margin-top: 15px;">₱<span id="cash-balance">0.00</span></div>
-            </div>
-            <div class="card-orange">
-                <span style="font-size: 10px; font-weight: bold; opacity: 0.9;">TOTAL PROFIT</span>
-                <div style="font-size: 18px; font-weight: 900; margin-top: 15px;">₱<span id="total-profit">0.00</span></div>
-            </div>
+            <div class="card-green"><span>CASH BALANCE</span><br><b>₱<span id="cash-balance">0.00</span></b></div>
+            <div class="card-orange"><span>TOTAL PROFIT</span><br><b>₱<span id="total-profit">0.00</span></b></div>
         </div>
-
-        <!-- WALLETS SECTION -->
         <div>
-            <div class="section-title">
-                <span>My E-Wallets</span>
-                <button onclick="openAddWalletModal()" style="color: #db2777; background: none; border: none; font-weight: bold; cursor: pointer;">+ Add Wallet</button>
-            </div>
+            <div class="section-title"><span>My E-Wallets</span><button onclick="openW()" style="color:#db2777; background:none; border:none; font-weight:bold;">+ Add Wallet</button></div>
             <div class="wallet-grid" id="wallets-container"></div>
         </div>
-
-        <!-- TRANSACTION LOGS LIST -->
         <div class="section-title">Transaction History</div>
-        <div class="box-white" id="transaction-history-list" style="font-size: 12px; color: #64748b; max-height: 150px; overflow-y: auto; padding: 10px;">
-            Walang nakaimbak na transaction.
-        </div>
-
-        <!-- QUICK NOTES SECTION -->
-        <div class="section-title">Quick Notes & Reminders <span id="record-count" style="font-size: 10px; color: #db2777;">0 records</span></div>
-        <div class="box-white">
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="new-note-input" placeholder="Add a quick note..." class="input-text">
-                <button onclick="addNote()" class="btn-pink" style="width: 25%;">Add</button>
-            </div>
-            <div id="notes-list" style="margin-top: 10px; font-size: 12px; color: #64748b;">No quick notes stored.</div>
-        </div>
+        <div class="box-white" id="tx-list" style="font-size:12px; max-height:120px; overflow-y:auto;">No logs.</div>
+        <div class="section-title">Quick Notes <span id="record-count" style="color:#db2777;">0 records</span></div>
+        <div class="box-white"><input type="text" id="new-note-input" placeholder="Add note..." style="width:65%; padding:6px;"><button onclick="addN()" style="background:#db2777; color:white; border:none; padding:6px 12px; margin-left:5px;">Add</button><div id="notes-list" style="margin-top:10px; font-size:12px;"></div></div>
     </div>
-    <!-- ADD WALLET MODAL POP-UP FORM -->
-    <div id="wallet-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
-                <span style="font-weight: bold; font-size: 14px;">➕ Add New E-Wallet</span>
-                <button onclick="closeAddWalletModal()" style="border: none; background: none; font-weight: bold; cursor: pointer; color: #ef4444;">❌</button>
-            </div>
-            <div style="margin-top: 15px;">
-                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Wallet Name</label>
-                <input type="text" id="wallet-name-input" placeholder="e.g., GCash, PayMaya" style="width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px;">
-            </div>
-            <div style="margin-top: 10px;">
-                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Current Balance</label>
-                <input type="number" id="wallet-balance-input" placeholder="0.00" style="width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px;">
-            </div>
-            <div style="margin-top: 15px; display: flex; gap: 8px; justify-content: flex-end;">
-                <button onclick="closeAddWalletModal()" style="padding: 6px 12px; background: #e2e8f0; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">Cancel</button>
-                <button onclick="saveWalletToFirebase()" style="padding: 6px 12px; background: #db2777; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">Save Wallet</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- CASH IN / CASH OUT MODAL FORM -->
-    <div id="tx-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
-                <span id="tx-modal-title" style="font-weight: bold; font-size: 14px;">Transaction</span>
-                <button onclick="closeTxModal()" style="border: none; background: none; font-weight: bold; cursor: pointer; color: #ef4444;">❌</button>
-            </div>
-            <div style="margin-top: 15px;">
-                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Piliin ang E-Wallet</label>
-                <select id="tx-wallet-select" class="select-style"></select>
-            </div>
-            <div style="margin-top: 10px;">
-                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Amount (Halaga)</label>
-                <input type="number" id="tx-amount-input" placeholder="0.00" style="width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px;">
-            </div>
-            <div style="margin-top: 10px;">
-                <label style="font-size: 11px; font-weight: bold; color: #64748b; display: block; margin-bottom: 4px;">Service Fee / Patong (Kita)</label>
-                <input type="number" id="tx-fee-input" placeholder="0.00" style="width: 90%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px;">
-            </div>
-            <div style="margin-top: 15px; display: flex; gap: 8px; justify-content: flex-end;">
-                <button onclick="closeTxModal()" style="padding: 6px 12px; background: #e2e8f0; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">Cancel</button>
-                <button onclick="saveTransactionToFirebase()" style="padding: 6px 12px; background: #059669; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- BOTTOM NAVIGATION -->
-    <div class="bottom-nav">
-        <button onclick="document.getElementById('transaction-history-list').scrollIntoView({behavior: 'smooth'})" style="color: #db2777; background:none; border:none; font-weight:bold;">📋 History</button>
-        <button onclick="openTxModal('In')" style="color: #16a34a; background:none; border:none; font-weight:bold;">📥 Cash In</button>
-        <button onclick="openAddWalletModal()" style="background: #db2777; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 16px; cursor: pointer; font-weight: bold;">＋</button>
-        <button onclick="openTxModal('Out')" style="color: #dc2626; background:none; border:none; font-weight:bold;">📤 Cash Out</button>
-        <button onclick="document.getElementById('new-note-input').focus()" style="color: #d97706; background:none; border:none; font-weight:bold;">📝 Notes</button>
-    </div>
-
-    <!-- SYSTEM LOGIC SCRIPTS -->
+    <div id="w-modal" class="modal"><div class="modal-content"><b>➕ New Wallet</b><br><input type="text" id="w-name" placeholder="Name" style="width:95%; margin-top:10px;"><br><input type="number" id="w-bal" placeholder="Balance" style="width:95%; margin-top:10px;"><br><br><button onclick="closeW()">Cancel</button><button onclick="saveW()" style="background:#db2777; color:white; margin-left:10px;">Save</button></div></div>
+    <div id="tx-modal" class="modal"><div class="modal-content"><b id="tx-title">Transaction</b><br><select id="tx-select" style="width:95%; margin-top:10px;"></select><br><input type="number" id="tx-amt" placeholder="Amount" style="width:95%; margin-top:10px;"><br><input type="number" id="tx-fee" placeholder="Fee / Profit" style="width:95%; margin-top:10px;"><br><br><button onclick="closeTx()">Cancel</button><button onclick="saveTx()" style="background:#059669; color:white; margin-left:10px;">Submit</button></div></div>
+    <div class="bottom-nav"><button onclick="openTx('In')" style="color:#16a34a; background:none; border:none;">📥 Cash In</button><button onclick="openW()" style="background:#db2777; color:white; border-radius:50%; width:35px; height:35px;">＋</button><button onclick="openTx('Out')" style="color:#dc2626; background:none; border:none;">📤 Cash Out</button></div>
     <script>
-        const firebaseConfig = { databaseURL: "https://firebasedatabase.app" };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        let globalWallets = {};
-        let currentTxType = "In";
-
-        function addNote() {
-            const noteInput = document.getElementById('new-note-input');
-            const noteText = noteInput.value.trim();
-            if (noteText === "") return alert("Maglagay ng mensahe!");
-            database.ref('notes').push({ text: noteText, timestamp: Date.now() }).then(() => { noteInput.value = ""; });
-        }
-
-        database.ref('notes').on('value', (snapshot) => {
-            const notesList = document.getElementById('notes-list');
-            const recordCount = document.getElementById('record-count');
-            notesList.innerHTML = "";
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                let count = 0;
-                Object.keys(data).forEach((key) => {
-                    count++;
-                    const div = document.createElement('div');
-                    div.style.background = "#f8fafc"; div.style.padding = "8px"; div.style.border = "1px solid #e2e8f0"; div.style.borderRadius = "8px"; div.style.marginTop = "5px"; div.style.display = "flex"; div.style.justifyContent = "space-between";
-                    div.innerHTML = `<span style="flex:1;">${data[key].text}</span><button onclick="deleteNote('${key}')" style="background:none; border:none; cursor:pointer;">🗑️</button>`;
-                    notesList.appendChild(div);
-                });
-                recordCount.innerText = `${count} records`;
-            } else {
-                notesList.innerHTML = `No quick notes stored.`;
-                recordCount.innerText = `0 records`;
-            }
-        });
-
-        function deleteNote(key) { database.ref('notes/' + key).remove(); }
-        function openAddWalletModal() { document.getElementById('wallet-modal').style.display = "flex"; }
-        function closeAddWalletModal() {
-            document.getElementById('wallet-modal').style.display = "none";
-            document.getElementById('wallet-name-input').value = "";
-            document.getElementById('wallet-balance-input').value = "";
-        }
-
-        function saveWalletToFirebase() {
-            const name = document.getElementById('wallet-name-input').value.trim();
-            const balance = parseFloat(document.getElementById('wallet-balance-input').value) || 0;
-            if (name === "") return alert("Ilagay ang pangalan ng E-Wallet!");
-            database.ref('wallets').push({ name: name, balance: balance, timestamp: Date.now() }).then(() => { closeAddWalletModal(); });
-        }
-
-        database.ref('wallets').on('value', (snapshot) => {
-            const container = document.getElementById('wallets-container');
-            const totalBalanceEl = document.getElementById('total-balance');
-            const selectDropdown = document.getElementById('tx-wallet-select');
-            
-            container.innerHTML = "";
-            selectDropdown.innerHTML = "";
-            let totalCapital = 0;
-            
-            if (snapshot.exists()) {
-                globalWallets = snapshot.val();
-                Object.keys(globalWallets).forEach((key) => {
-                    const w = globalWallets[key];
-                    totalCapital += w.balance;
-                    
-                    const card = document.createElement('div');
-                    card.className = "wallet-item";
-                    card.innerHTML = `<div><b style="font-size:12px;">${w.name}</b><br><span style="color:#db2777; font-size:11px; font-weight:bold;">₱${w.balance.toLocaleString('en-US', {minimumFractionDigits:2})}</span></div><button onclick="deleteWallet('${key}')" style="background:none; border:none; cursor:pointer;">🗑️</button>`;
-                    container.appendChild(card);
-
-                    const opt = document.createElement('option');
-                    opt.value = key;
-                    opt.innerText = w.name;
-                    selectDropdown.appendChild(opt);
-                });
-            } else {
-                container.innerHTML = `<div style="grid-column: span 2; text-align:center; font-size:11px; color:#94a3b8; padding:10px;">No wallets added yet.</div>`;
-            }
-            totalBalanceEl.innerText = `₱${totalCapital.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-        });
-
-        function deleteWallet(key) { if (confirm("Gusto mo bang burahin ito?")) database.ref('wallets/' + key).remove(); }
-
-        function openTxModal(type) {
-            currentTxType = type;
-            document.getElementById('tx-modal-title').innerText = "Cash " + type + " Form";
-            document.getElementById('tx-modal').style.display = "flex";
-        }
-
-        function closeTxModal() {
-        function openTxModal(type) {
-            currentTxType = type;
-            document.getElementById('tx-modal-title').innerText = "Cash " + type + " Form";
-            document.getElementById('tx-modal').style.display = "flex";
-        }
-
-        function closeTxModal() {
-            document.getElementById('tx-modal').style.display = "none";
-            document.getElementById('tx-amount-input').value = "";
-            document.getElementById('tx-fee-input').value = "";
-        }
-
-        function saveTransactionToFirebase() {
-            const walletKey = document.getElementById('tx-wallet-select').value;
-            const amount = parseFloat(document.getElementById('tx-amount-input').value) || 0;
-            const fee = parseFloat(document.getElementById('tx-fee-input').value) || 0;
-
-            if (!walletKey) return alert("Gumawa muna ng E-Wallet bago mag-transact!");
-            if (amount <= 0) return alert("Maglagay ng tamang halaga!");
-
-            const selectedWallet = globalWallets[walletKey];
-            let newBalance = selectedWallet.balance;
-
-            if (currentTxType === "In") {
-                newBalance += amount;
-            } else {
-                if (amount > selectedWallet.balance) return alert("Kulang ang laman ng iyong " + selectedWallet.name);
-                newBalance -= amount;
-            }
-
-            database.ref('transactions').push({
-                walletName: selectedWallet.name,
-                type: currentTxType,
-                amount: amount,
-                fee: fee,
-                timestamp: Date.now()
-            }).then(() => {
-                database.ref('wallets/' + walletKey).update({ balance: newBalance });
-                closeTxModal();
-            });
-        }
-
-        database.ref('transactions').on('value', (snapshot) => {
-            const listContainer = document.getElementById('transaction-history-list');
-            const totalProfitEl = document.getElementById('total-profit');
-            listContainer.innerHTML = "";
-            
-            let totalProfit = 0;
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                Object.keys(data).reverse().forEach((key) => {
-                    const tx = data[key];
-                    totalProfit += tx.fee;
-
-                    const div = document.createElement('div');
-                    div.style.padding = "6px"; div.style.borderBottom = "1px solid #f1f5f9"; div.style.display = "flex"; div.style.justifyContent = "space-between";
-                    const color = tx.type === "In" ? "#16a34a" : "#dc2626";
-                    div.innerHTML = `<span><b>Cash ${tx.type}</b> (${tx.walletName})</span><span style="color:${color}; font-weight:bold;">₱${tx.amount} (+₱${tx.fee})</span>`;
-                    listContainer.appendChild(div);
-                });
-            } else {
-                listContainer.innerHTML = "Walang nakaimbak na transaction.";
-            }
-            totalProfitEl.innerText = totalProfit.toLocaleString('en-US', {minimumFractionDigits: 2});
-        });
+        firebase.initializeApp({ databaseURL: "https://firebasedatabase.app" });
+        const db = firebase.database(); let wallets = {}, txType = "In";
+        function addN() { const t = document.getElementById('new-note-input').value.trim(); if(t) db.ref('notes').push({text:t}).then(()=>{document.getElementById('new-note-input').value=""}); }
+        db.ref('notes').on('value', s => { const c = document.getElementById('notes-list'); c.innerHTML = ""; let n = 0; if(s.exists()) { Object.keys(s.val()).forEach(k => { n++; const d = document.createElement('div'); d.innerHTML = `<span>${s.val()[k].text}</span><button onclick="db.ref('notes/'+'${k}').remove()">🗑️</button>`; c.appendChild(d); }); } document.getElementById('record-count').innerText = n + ' records'; });
+        function openW() { document.getElementById('w-modal').style.display = "flex"; }
+        function closeW() { document.getElementById('w-modal').style.display = "none"; document.getElementById('w-name').value=""; document.getElementById('w-bal').value=""; }
+        function saveW() { const n = document.getElementById('w-name').value.trim(), b = parseFloat(document.getElementById('w-bal').value)||0; if(n) db.ref('wallets').push({name:n, balance:b}).then(closeW); }
+        db.ref('wallets').on('value', s => { const c = document.getElementById('wallets-container'), sel = document.getElementById('tx-select'); c.innerHTML = ""; sel.innerHTML = ""; let t = 0; if(s.exists()) { wallets = s.val(); Object.keys(wallets).forEach(k => { const w = wallets[k]; t += w.balance; const d = document.createElement('div'); d.style.background="white"; d.style.padding="10px"; d.style.border="1px solid #fce7f3"; d.innerHTML = `<b>${w.name}</b><br><span style="color:#db2777;">₱${w.balance}</span><button onclick="if(confirm('Delete?'))db.ref('wallets/'+'${k}').remove()">🗑️</button>`; c.appendChild(d); const o = document.createElement('option'); o.value = k; o.innerText = w.name; sel.appendChild(o); }); } document.getElementById('total-balance').innerText = '₱' + t; });
+        function openTx(type) { txType = type; document.getElementById('tx-title').innerText = "Cash " + type; document.getElementById('tx-modal').style.display = "flex"; }
+        function closeTx() { document.getElementById('tx-modal').style.display = "none"; document.getElementById('tx-amt').value=""; document.getElementById('tx-fee').value=""; }
+        function saveTx() { const k = document.getElementById('tx-select').value, a = parseFloat(document.getElementById('tx-amt').value)||0, f = parseFloat(document.getElementById('tx-fee').value)||0; if(!k || a<=0) return alert("Error"); let nb = wallets[k].balance; if(txType==="In") nb += a; else { if(a>nb) return alert("Kulang laman"); nb -= a; } db.ref('transactions').push({wName:wallets[k].name, type:txType, amt:a, fee:f}).then(() => { db.ref('wallets/'+k).update({balance:nb}); closeTx(); }); }
+        db.ref('transactions').on('value', s => { const c = document.getElementById('tx-list'); c.innerHTML = ""; let p = 0; if(s.exists()) { Object.keys(s.val()).reverse().forEach(k => { const t = s.val()[k]; p += t.fee; const d = document.createElement('div'); d.innerHTML = `<span>${t.type} (${t.wName})</span>: <b>₱${t.amt} (+₱${t.fee})</b>`; c.appendChild(d); }); } document.getElementById('total-profit').innerText = p; });
     </script>
 </body>
 </html>
