@@ -7,18 +7,18 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background-color: #f4f6f8; }
     .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    h2 { margin-top: 0; }
+    h2, h3 { margin-top: 0; color: #333; }
     .balance { font-size: 28px; font-weight: bold; color: #2e7d32; }
-    input, select, button { width: 100%; padding: 10px; margin: 6px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+    input, select, button { width: 100%; padding: 10px; margin: 6px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; font-size: 14px; }
     button { background-color: #007bff; color: white; font-weight: bold; border: none; cursor: pointer; }
     button:hover { background-color: #0056b3; }
-    .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+    .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
     .income { color: #2e7d32; font-weight: bold; }
     .expense { color: #c62828; font-weight: bold; }
-    .btn-group { display: flex; gap: 5px; }
+    .btn-group { display: flex; gap: 5px; margin-top: 5px; }
     .btn-sm { padding: 4px 8px; font-size: 12px; width: auto; }
-    .btn-edit { background-color: #ff9800; }
-    .btn-delete { background-color: #f44336; }
+    .btn-edit { background-color: #ff9800; color: white; }
+    .btn-delete { background-color: #f44336; color: white; }
   </style>
 </head>
 <body>
@@ -32,8 +32,8 @@
   <div class="card">
     <h3 id="formTitle">Add Transaction</h3>
     <input type="hidden" id="editDocId" />
-    <input type="text" id="note" placeholder="Description (e.g. Baon, Jollibee)" />
-    <input type="number" id="amount" placeholder="Amount (₱)" />
+    <input type="text" id="note" placeholder="Description (e.g. Baon, Jollibee, GCash Cash In)" />
+    <input type="number" step="any" id="amount" placeholder="Amount (₱)" />
     <select id="type">
       <option value="income">Income (+)</option>
       <option value="expense">Expense (-)</option>
@@ -46,7 +46,7 @@
     <div id="transactionList">Loading transactions...</div>
   </div>
 
-  <!-- Firebase Modular SDK setup -->
+  <!-- Firebase Modular SDK Setup -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -62,7 +62,7 @@
       serverTimestamp 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. Firebase Config mo
+    // 1. Ang iyong Firebase Credentials
     const firebaseConfig = {
       apiKey: "AIzaSyDWnLjULj9iaeyd3gu4ohlLvvYdW4hoE18",
       authDomain: "e-wallet-aaecb.firebaseapp.com",
@@ -77,16 +77,16 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 3. REAL-TIME LISTENER (Nag-uupdate sa lahat ng phone kapag may ginawa)
+    // 3. REAL-TIME LISTENER (Kusa at matik na nag-uupdate kapag may nabago)
     const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"));
     
     onSnapshot(q, (snapshot) => {
       let transactions = [];
       let total = 0;
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const item = { id: doc.id, ...data };
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const item = { id: docSnap.id, ...data };
         transactions.push(item);
 
         // Kwenta ng Total Balance
@@ -97,11 +97,14 @@
         }
       });
 
-      // Update Balance Screen
-      document.getElementById("totalBalance").innerText = `₱${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      // Update Total Balance sa screen
+      document.getElementById("totalBalance").innerText = `₱${total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-      // Update History List Screen
+      // Update Listahan sa screen
       renderList(transactions);
+    }, (error) => {
+      console.error("Error fetching transactions: ", error);
+      document.getElementById("transactionList").innerHTML = "<p style='color:red;'>Failed to load transactions. Check console/rules.</p>";
     });
 
     // 4. Render Transaction List
@@ -116,14 +119,14 @@
         <div class="transaction-item">
           <div>
             <strong>${item.note || 'No Description'}</strong><br/>
-            <small>${item.type.toUpperCase()}</small>
+            <small style="color: #666;">${item.type ? item.type.toUpperCase() : ''}</small>
           </div>
-          <div>
+          <div style="text-align: right;">
             <span class="${item.type}">
-              ${item.type === 'income' ? '+' : '-'}₱${Number(item.amount).toFixed(2)}
+              ${item.type === 'income' ? '+' : '-'}₱${Number(item.amount || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             </span>
             <div class="btn-group">
-              <button class="btn-sm btn-edit" onclick="prepareEdit('${item.id}', '${item.note}', ${item.amount}, '${item.type}')">Edit</button>
+              <button class="btn-sm btn-edit" onclick="prepareEdit('${item.id}', '${(item.note || '').replace(/'/g, "\\'")}', ${item.amount}, '${item.type}')">Edit</button>
               <button class="btn-sm btn-delete" onclick="deleteTransaction('${item.id}')">Delete</button>
             </div>
           </div>
@@ -138,36 +141,40 @@
       const amount = document.getElementById("amount").value;
       const type = document.getElementById("type").value;
 
-      if (!amount || amount <= 0) {
+      if (!amount || Number(amount) <= 0) {
         alert("Pakilagay ang tamang halaga/amount.");
         return;
       }
 
-      if (editId) {
-        // Kapag nag-e-edit
-        const docRef = doc(db, "transactions", editId);
-        await updateDoc(docRef, {
-          note: note,
-          amount: Number(amount),
-          type: type,
-          updatedAt: serverTimestamp()
-        });
-        document.getElementById("editDocId").value = "";
-        document.getElementById("formTitle").innerText = "Add Transaction";
-        document.getElementById("saveBtn").innerText = "Save Transaction";
-      } else {
-        // Kapag bago / Add
-        await addDoc(collection(db, "transactions"), {
-          note: note,
-          amount: Number(amount),
-          type: type,
-          createdAt: serverTimestamp()
-        });
-      }
+      try {
+        if (editId) {
+          // Kapag nag-e-edit
+          const docRef = doc(db, "transactions", editId);
+          await updateDoc(docRef, {
+            note: note,
+            amount: Number(amount),
+            type: type,
+            updatedAt: serverTimestamp()
+          });
+          document.getElementById("editDocId").value = "";
+          document.getElementById("formTitle").innerText = "Add Transaction";
+          document.getElementById("saveBtn").innerText = "Save Transaction";
+        } else {
+          // Kapag Bago / Add
+          await addDoc(collection(db, "transactions"), {
+            note: note,
+            amount: Number(amount),
+            type: type,
+            createdAt: serverTimestamp()
+          });
+        }
 
-      // Clear input fields
-      document.getElementById("note").value = "";
-      document.getElementById("amount").value = "";
+        // Clear input fields
+        document.getElementById("note").value = "";
+        document.getElementById("amount").value = "";
+      } catch (e) {
+        alert("Error saving: " + e.message);
+      }
     };
 
     // 6. Set Form for Edit
@@ -184,7 +191,11 @@
     // 7. DELETE Function
     window.deleteTransaction = async function(id) {
       if (confirm("Sigurado ka bang gusto mong burahin ang transaction na ito?")) {
-        await deleteDoc(doc(db, "transactions", id));
+        try {
+          await deleteDoc(doc(db, "transactions", id));
+        } catch (e) {
+          alert("Error deleting: " + e.message);
+        }
       }
     };
   </script>
