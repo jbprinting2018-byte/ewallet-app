@@ -13,7 +13,6 @@
     <style>
         body { -webkit-tap-highlight-color: transparent; }
         .pb-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
-        .modal-active { overflow: hidden; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
     </style>
@@ -78,6 +77,44 @@
             </div>
         </section>
 
+        <!-- DAILY / WEEKLY SUMMARY SECTION -->
+        <section class="bg-white rounded-2xl p-3.5 shadow-sm border border-pink-100 space-y-2.5">
+            <div class="flex justify-between items-center border-b pb-1.5">
+                <h3 class="text-xs font-black uppercase tracking-wider text-pink-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-chart-pie"></i> Quick Analytics Summary
+                </h3>
+                <span class="text-[10px] text-slate-400 font-bold">Auto-calculated</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <!-- TODAY SUMMARY -->
+                <div class="bg-pink-50/70 p-2.5 rounded-xl border border-pink-200/60">
+                    <p class="font-extrabold text-pink-900 border-b border-pink-200/50 pb-1 mb-1 flex items-center justify-between">
+                        <span>📅 TODAY</span>
+                        <span id="today-date-label" class="text-[10px] font-normal text-pink-600">--</span>
+                    </p>
+                    <div class="space-y-0.5 text-[11px]">
+                        <div class="flex justify-between"><span class="text-slate-500">In:</span> <span id="today-in" class="font-bold text-emerald-600">₱0.00</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Out/Load:</span> <span id="today-out" class="font-bold text-rose-600">₱0.00</span></div>
+                        <div class="flex justify-between border-t pt-0.5 mt-0.5"><span class="font-bold text-slate-700">Profit:</span> <span id="today-profit" class="font-black text-amber-600">₱0.00</span></div>
+                    </div>
+                </div>
+
+                <!-- THIS WEEK SUMMARY -->
+                <div class="bg-purple-50/70 p-2.5 rounded-xl border border-purple-200/60">
+                    <p class="font-extrabold text-purple-900 border-b border-purple-200/50 pb-1 mb-1 flex items-center justify-between">
+                        <span>📆 THIS WEEK</span>
+                        <span class="text-[10px] font-normal text-purple-600">7 Days</span>
+                    </p>
+                    <div class="space-y-0.5 text-[11px]">
+                        <div class="flex justify-between"><span class="text-slate-500">In:</span> <span id="week-in" class="font-bold text-emerald-600">₱0.00</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Out/Load:</span> <span id="week-out" class="font-bold text-rose-600">₱0.00</span></div>
+                        <div class="flex justify-between border-t pt-0.5 mt-0.5"><span class="font-bold text-slate-700">Profit:</span> <span id="week-profit" class="font-black text-amber-600">₱0.00</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- WALLETS LIST -->
         <section>
             <div class="flex justify-between items-center mb-2.5">
@@ -96,6 +133,13 @@
                     <i class="fa-solid fa-list-ul text-pink-600"></i> Main Transaction Log
                 </h2>
                 <span id="record-count" class="text-xs px-2.5 py-1 rounded-full bg-pink-100 font-bold text-pink-700">0 records</span>
+            </div>
+
+            <!-- Time Filter Buttons -->
+            <div class="flex gap-1.5 mb-3 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                <button onclick="setTimeFilter('all')" id="filter-all" class="flex-1 py-1.5 rounded-lg bg-white shadow-sm text-pink-600 transition">All Time</button>
+                <button onclick="setTimeFilter('today')" id="filter-today" class="flex-1 py-1.5 rounded-lg text-slate-500 transition">Today</button>
+                <button onclick="setTimeFilter('week')" id="filter-week" class="flex-1 py-1.5 rounded-lg text-slate-500 transition">This Week</button>
             </div>
 
             <!-- Search Bar -->
@@ -340,7 +384,6 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- INITIAL DATA & STATE ---
         const DEFAULT_WALLETS = [
             { id: 'gcash1', name: 'GCash #1', balance: 5000.00, color: 'from-pink-500 to-rose-500', icon: 'fa-mobile-screen' },
             { id: 'gcash2', name: 'GCash #2', balance: 2500.00, color: 'from-purple-500 to-pink-500', icon: 'fa-mobile-screen' },
@@ -355,12 +398,13 @@
         let cashBalance = parseFloat(localStorage.getItem('ew_cash_balance')) || 0.00;
         let totalProfit = parseFloat(localStorage.getItem('ew_total_profit')) || 0.00;
         let currentTab = 'main';
+        let currentTimeFilter = 'all';
 
-        // --- INIT APP ---
         document.addEventListener('DOMContentLoaded', () => {
             renderWallets();
             renderCashAndProfit();
             populateWalletSelect();
+            renderAnalyticsSummary();
             renderCurrentView();
         });
 
@@ -372,9 +416,9 @@
             localStorage.setItem('ew_total_profit', totalProfit.toString());
             renderWallets();
             renderCashAndProfit();
+            renderAnalyticsSummary();
         }
 
-        // --- RENDER WALLETS & TOTAL BALANCE ---
         function renderWallets() {
             const container = document.getElementById('wallets-container');
             let ewalletTotal = 0;
@@ -400,7 +444,6 @@
                 container.appendChild(card);
             });
 
-            // TOTAL BALANCE = E-Wallets + Cash Balance
             const grandTotal = ewalletTotal + cashBalance;
             document.getElementById('total-balance').innerText = `₱${grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
@@ -408,6 +451,65 @@
         function renderCashAndProfit() {
             document.getElementById('cash-balance').innerText = cashBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('total-profit').innerText = totalProfit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        // --- ANALYTICS SUMMARY ENGINE (DAILY & WEEKLY) ---
+        function renderAnalyticsSummary() {
+            const now = new Date();
+            const todayStr = now.toISOString().slice(0, 10);
+            
+            // Set Today label
+            document.getElementById('today-date-label').innerText = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+            // Calculate start of week (7 days ago)
+            const weekAgo = new Date();
+            weekAgo.setDate(now.getDate() - 7);
+
+            let todayIn = 0, todayOut = 0, todayProf = 0;
+            let weekIn = 0, weekOut = 0, weekProf = 0;
+
+            transactions.forEach(t => {
+                if (!t.datetime) return;
+                const txDate = new Date(t.datetime);
+                const txDateStr = t.datetime.slice(0, 10);
+                const amt = parseFloat(t.amount) || 0;
+                const fee = parseFloat(t.fee) || 0;
+
+                // Today Check
+                if (txDateStr === todayStr) {
+                    if (t.type === 'Cash In') todayIn += amt;
+                    else if (t.type === 'Cash Out' || t.type === 'Load') todayOut += amt;
+                    todayProf += fee;
+                }
+
+                // Week Check
+                if (txDate >= weekAgo) {
+                    if (t.type === 'Cash In') weekIn += amt;
+                    else if (t.type === 'Cash Out' || t.type === 'Load') weekOut += amt;
+                    weekProf += fee;
+                }
+            });
+
+            document.getElementById('today-in').innerText = `₱${todayIn.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('today-out').innerText = `₱${todayOut.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('today-profit').innerText = `₱${todayProf.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+
+            document.getElementById('week-in').innerText = `₱${weekIn.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('week-out').innerText = `₱${weekOut.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('week-profit').innerText = `₱${weekProf.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+        }
+
+        function setTimeFilter(filter) {
+            currentTimeFilter = filter;
+            ['all', 'today', 'week'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filter) {
+                    btn.className = "flex-1 py-1.5 rounded-lg bg-white shadow-sm text-pink-600 transition font-bold";
+                } else {
+                    btn.className = "flex-1 py-1.5 rounded-lg text-slate-500 transition font-bold";
+                }
+            });
+            renderCurrentView();
         }
 
         function populateWalletSelect() {
@@ -442,7 +544,6 @@
             }
         }
 
-        // --- MATH REVERSAL ENGINE (FOR EDIT / DELETE) ---
         function applyMathForTx(tx, isReverse = false) {
             const multiplier = isReverse ? -1 : 1;
             const walletIndex = wallets.findIndex(w => w.id === tx.walletId);
@@ -451,18 +552,14 @@
 
             if (walletIndex !== -1) {
                 if (tx.type === 'Cash In') {
-                    // Cash In: -Wallet, +Cash
                     wallets[walletIndex].balance -= amt * multiplier;
                     cashBalance += amt * multiplier;
                 } else if (tx.type === 'Cash Out') {
-                    // Cash Out: +Wallet, -Cash
                     wallets[walletIndex].balance += amt * multiplier;
                     cashBalance -= amt * multiplier;
                 } else if (tx.type === 'Load') {
-                    // Load: -Wallet
                     wallets[walletIndex].balance -= amt * multiplier;
                 } else if (tx.type === 'Payment') {
-                    // Payment: -Wallet, -Cash
                     wallets[walletIndex].balance -= amt * multiplier;
                     cashBalance -= amt * multiplier;
                 }
@@ -473,7 +570,6 @@
             }
         }
 
-        // --- SAVE TRANSACTION (CREATE & EDIT) ---
         function saveTransaction(e) {
             e.preventDefault();
 
@@ -491,12 +587,9 @@
             if (!wallet) return;
 
             if (editingId) {
-                // Editing existing transaction: First reverse old math
                 const oldIndex = transactions.findIndex(t => t.id === editingId);
                 if (oldIndex !== -1) {
-                    applyMathForTx(transactions[oldIndex], true); // REVERSE OLD
-                    
-                    // Update Record
+                    applyMathForTx(transactions[oldIndex], true);
                     transactions[oldIndex] = {
                         id: editingId,
                         type, walletId, walletName: wallet.name,
@@ -505,11 +598,9 @@
                         ref: (type === 'Payment') ? '' : ref,
                         note
                     };
-
-                    applyMathForTx(transactions[oldIndex], false); // APPLY NEW
+                    applyMathForTx(transactions[oldIndex], false);
                 }
             } else {
-                // New Transaction
                 const newTx = {
                     id: 'tx_' + Date.now(),
                     type, walletId, walletName: wallet.name,
@@ -518,8 +609,7 @@
                     ref: (type === 'Payment') ? '' : ref,
                     note
                 };
-
-                applyMathForTx(newTx, false); // APPLY
+                applyMathForTx(newTx, false);
                 transactions.unshift(newTx);
             }
 
@@ -533,7 +623,7 @@
             if (confirm("Sigurado ka bang gusto mong idelete ang transaction na ito? Awtomatikong ibabalik ang mga nabawas o naidagdag na pera.")) {
                 const idx = transactions.findIndex(t => t.id === txId);
                 if (idx !== -1) {
-                    applyMathForTx(transactions[idx], true); // REVERSE MATH
+                    applyMathForTx(transactions[idx], true);
                     transactions.splice(idx, 1);
                     saveStorage();
                     populateWalletSelect();
@@ -557,7 +647,7 @@
             document.getElementById('tx-note').value = tx.note || '';
 
             document.getElementById('tx-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-pink-600"></i> Edit Transaction`;
-            document.getElementById('ocr-container').classList.add('hidden'); // Hide OCR on edit
+            document.getElementById('ocr-container').classList.add('hidden');
             
             toggleTxFields();
             openAddTxModal();
@@ -572,7 +662,6 @@
             }
         }
 
-        // --- VIEWS & TABS ---
         function switchTab(tab) {
             currentTab = tab;
             document.querySelectorAll('nav button').forEach(b => b.className = b.className.replace('text-pink-600', 'text-slate-500'));
@@ -601,6 +690,7 @@
 
             let filtered = [...transactions];
 
+            // Apply Tab Filter
             if (currentTab === 'cashin') {
                 title.innerHTML = `<i class="fa-solid fa-circle-arrow-down text-emerald-500"></i> Cash In Logs`;
                 filtered = filtered.filter(t => t.type === 'Cash In');
@@ -620,6 +710,18 @@
                 }
             } else {
                 title.innerHTML = `<i class="fa-solid fa-list-ul text-pink-600"></i> Main Transaction Log`;
+            }
+
+            // Apply Time Filter
+            const now = new Date();
+            const todayStr = now.toISOString().slice(0, 10);
+            const weekAgo = new Date();
+            weekAgo.setDate(now.getDate() - 7);
+
+            if (currentTimeFilter === 'today') {
+                filtered = filtered.filter(t => t.datetime && t.datetime.slice(0, 10) === todayStr);
+            } else if (currentTimeFilter === 'week') {
+                filtered = filtered.filter(t => t.datetime && new Date(t.datetime) >= weekAgo);
             }
 
             count.innerText = `${filtered.length} records`;
@@ -662,7 +764,6 @@
                         <p class="font-black text-base text-slate-900">₱${parseFloat(t.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
                         ${t.fee > 0 ? `<p class="text-xs font-bold text-amber-600">+₱${parseFloat(t.fee).toFixed(2)} Fee</p>` : ''}
                         
-                        <!-- Action Buttons -->
                         <div class="flex justify-end gap-2 pt-1">
                             <button onclick="editTransaction('${t.id}')" class="text-blue-600 hover:text-blue-800 font-bold p-1">
                                 <i class="fa-solid fa-pen-to-square"></i> Edit
@@ -677,7 +778,6 @@
             });
         }
 
-        // --- NOTES LOGIC ---
         function renderNotes() {
             const container = document.getElementById('notes-list');
             container.innerHTML = '';
@@ -715,22 +815,13 @@
             renderCurrentView();
         }
 
-        // --- MODALS & FORM RESET ---
-        function openAddTxModal() { 
-            document.getElementById('add-tx-modal').classList.remove('hidden'); 
-        }
-
-        function closeAddTxModal() { 
-            document.getElementById('add-tx-modal').classList.add('hidden'); 
-            resetTxForm();
-        }
+        function openAddTxModal() { document.getElementById('add-tx-modal').classList.remove('hidden'); }
+        function closeAddTxModal() { document.getElementById('add-tx-modal').classList.add('hidden'); resetTxForm(); }
 
         function resetTxForm() {
             document.getElementById('editing-tx-id').value = '';
             document.getElementById('tx-modal-title').innerHTML = `<i class="fa-solid fa-receipt text-pink-600"></i> New Transaction`;
             document.getElementById('ocr-container').classList.remove('hidden');
-            
-            // Clear inputs for fresh entry
             document.getElementById('tx-amount').value = '';
             document.getElementById('tx-fee').value = '';
             document.getElementById('tx-ref').value = '';
@@ -739,7 +830,6 @@
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById('tx-datetime').value = now.toISOString().slice(0,16);
-            
             toggleTxFields();
         }
         
@@ -783,7 +873,6 @@
             closeEditCashModal();
         }
 
-        // OCR Scanner Handler
         async function handleOCRScan(e) {
             const file = e.target.files[0];
             if (!file) return;
