@@ -12,28 +12,26 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; }
-        .pb-safe { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .pb-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
         .modal-active { overflow: hidden; }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 min-h-screen pb-safe">
+<body class="bg-pink-50/50 font-sans text-slate-800 min-h-screen pb-safe">
 
     <!-- TOP HEADER -->
-    <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white p-4 sticky top-0 z-30 shadow-md">
+    <header class="bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white p-4 sticky top-0 z-30 shadow-md">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black tracking-wide flex items-center gap-2">
-                    <i class="fa-solid fa-wallet text-amber-400"></i> E-WALLET TRACKER
+                <h1 class="text-2xl font-black tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-wallet text-amber-300"></i> E-WALLET TRACKER
                 </h1>
-                <p class="text-xs text-blue-200">Smart Financial Log & Scanner</p>
+                <p class="text-sm text-pink-100 font-medium">Smart Financial Log & Store Tracker</p>
             </div>
             <div class="text-right">
-                <span class="text-[10px] text-blue-200 block uppercase font-bold tracking-wider">Total Balance</span>
-                <span id="total-balance" class="text-lg font-extrabold text-amber-300">₱0.00</span>
+                <span class="text-xs text-pink-100 block uppercase font-bold tracking-wider">Total Balance</span>
+                <span id="total-balance" class="text-xl font-black text-amber-300">₱0.00</span>
             </div>
         </div>
     </header>
@@ -41,75 +39,74 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-md mx-auto p-4 space-y-4">
 
-        <!-- STATS / OVERVIEW BANNER (CASH BALANCE & TOTAL PROFIT) -->
-        <section class="grid grid-cols-2 gap-2.5">
+        <!-- OVERVIEW CARDS (CASH BALANCE & TOTAL PROFIT) -->
+        <section class="grid grid-cols-2 gap-3">
             <!-- CASH BALANCE CARD -->
-            <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-3 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-24">
+            <div class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-3.5 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
                 <div class="flex justify-between items-start z-10">
                     <div>
-                        <p class="text-[10px] uppercase font-bold tracking-wider opacity-90">Cash Balance</p>
-                        <p class="text-[10px] opacity-75">Physical Money</p>
+                        <p class="text-xs uppercase font-extrabold tracking-wider opacity-90">Cash Balance</p>
+                        <p class="text-xs opacity-80">Physical Cash</p>
                     </div>
-                    <button onclick="openEditCashModal()" class="w-6 h-6 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-xs transition">
+                    <button onclick="openEditCashModal()" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-sm transition">
                         <i class="fa-solid fa-pen"></i>
                     </button>
                 </div>
                 <div class="z-10">
-                    <span class="text-xs opacity-80">₱</span>
-                    <span id="cash-balance" class="text-base font-black tracking-tight">0.00</span>
+                    <span class="text-sm opacity-80">₱</span>
+                    <span id="cash-balance" class="text-xl font-black tracking-tight">0.00</span>
                 </div>
-                <i class="fa-solid fa-money-bill-wave absolute -right-2 -bottom-2 text-5xl opacity-20"></i>
+                <i class="fa-solid fa-money-bill-wave absolute -right-2 -bottom-2 text-6xl opacity-20"></i>
             </div>
 
             <!-- TOTAL PROFIT CARD -->
-            <div class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-3 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-24">
+            <div class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-3.5 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
                 <div class="flex justify-between items-start z-10">
                     <div>
-                        <p class="text-[10px] uppercase font-bold tracking-wider opacity-90">Total Profit</p>
-                        <p class="text-[10px] opacity-75">Service Fee / Patong</p>
+                        <p class="text-xs uppercase font-extrabold tracking-wider opacity-90">Total Profit</p>
+                        <p class="text-xs opacity-80">Service Fee / Patong</p>
                     </div>
-                    <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs">
-                        <i class="fa-solid fa-chart-line"></i>
+                    <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-coins"></i>
                     </div>
                 </div>
                 <div class="z-10">
-                    <span class="text-xs opacity-80">₱</span>
-                    <span id="total-profit" class="text-base font-black tracking-tight">0.00</span>
+                    <span class="text-sm opacity-80">₱</span>
+                    <span id="total-profit" class="text-xl font-black tracking-tight">0.00</span>
                 </div>
-                <i class="fa-solid fa-coins absolute -right-2 -bottom-2 text-5xl opacity-20"></i>
+                <i class="fa-solid fa-chart-line absolute -right-2 -bottom-2 text-6xl opacity-20"></i>
             </div>
         </section>
 
-        <!-- WALLETS CAROUSEL / LIST -->
+        <!-- WALLETS LIST -->
         <section>
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">My E-Wallets</h2>
-                <span class="text-xs text-slate-400">Click ⚙️ to edit fund</span>
+            <div class="flex justify-between items-center mb-2.5">
+                <h2 class="text-sm font-extrabold uppercase tracking-wider text-slate-600">My E-Wallets</h2>
+                <span class="text-xs text-slate-400 font-semibold">Click ⚙️ to edit details / colors</span>
             </div>
-            <div class="grid grid-cols-2 gap-2.5" id="wallets-container">
-                <!-- Wallet Cards Populated dynamically -->
+            <div class="grid grid-cols-2 gap-3" id="wallets-container">
+                <!-- Dynamic E-Wallet Cards -->
             </div>
         </section>
 
         <!-- DYNAMIC CONTENT AREA -->
         <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-            <!-- Dynamic Section Header -->
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
-                <h2 id="view-title" class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-list-ul text-blue-600"></i> Main Transaction Log
+                <h2 id="view-title" class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-list-ul text-pink-600"></i> Main Transaction Log
                 </h2>
-                <span id="record-count" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 font-semibold text-slate-600">0 records</span>
+                <span id="record-count" class="text-xs px-2.5 py-1 rounded-full bg-pink-100 font-bold text-pink-700">0 records</span>
             </div>
 
             <!-- Search Bar -->
             <div id="search-bar-container" class="mb-3 hidden">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
-                    <input type="text" id="search-input" placeholder="Search by Ref #, Amount, or Note..." 
-                        class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <input type="text" id="search-input" placeholder="Search Ref #, Amount, or Note..." 
+                        class="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                         oninput="renderCurrentView()">
                     <button onclick="clearSearch()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
-                        <i class="fa-solid fa-xmark"></i>
+                        <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
             </div>
@@ -117,139 +114,133 @@
             <!-- Notes Container -->
             <div id="notes-view-container" class="hidden space-y-3 mb-4">
                 <div class="flex gap-2">
-                    <input type="text" id="new-note-input" placeholder="Add a quick reminder or note..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button onclick="addNote()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700">Add</button>
+                    <input type="text" id="new-note-input" placeholder="Add a quick note or reminder..." class="flex-1 px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <button onclick="addNote()" class="bg-pink-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-pink-700">Add</button>
                 </div>
                 <div id="notes-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
             </div>
 
             <!-- Transaction List -->
-            <div id="transaction-list" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
-                <!-- Dynamic Items -->
+            <div id="transaction-list" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+                <!-- Dynamic Transaction Items -->
             </div>
         </section>
 
     </main>
 
     <!-- BOTTOM NAVIGATION -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-30 px-2 py-1.5">
-        <div class="max-w-md mx-auto grid grid-cols-6 items-center text-center text-[10px] font-medium text-slate-500">
-            <!-- 1. Main Log -->
-            <button onclick="switchTab('main')" id="tab-main" class="p-1 text-blue-600 flex flex-col items-center">
-                <i class="fa-solid fa-list-check text-lg mb-0.5"></i>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-30 px-2 py-2">
+        <div class="max-w-md mx-auto grid grid-cols-6 items-center text-center text-xs font-bold text-slate-500">
+            <button onclick="switchTab('main')" id="tab-main" class="p-1 text-pink-600 flex flex-col items-center">
+                <i class="fa-solid fa-list-check text-xl mb-0.5"></i>
                 <span>Main Log</span>
             </button>
 
-            <!-- 2. Cash In -->
-            <button onclick="switchTab('cashin')" id="tab-cashin" class="p-1 hover:text-blue-600 flex flex-col items-center">
-                <i class="fa-solid fa-circle-arrow-down text-lg text-emerald-500 mb-0.5"></i>
+            <button onclick="switchTab('cashin')" id="tab-cashin" class="p-1 hover:text-pink-600 flex flex-col items-center">
+                <i class="fa-solid fa-circle-arrow-down text-xl text-emerald-500 mb-0.5"></i>
                 <span>Cash In</span>
             </button>
 
-            <!-- 3. Add Tx -->
-            <button onclick="openAddTxModal()" class="p-1 -mt-5 flex flex-col items-center">
-                <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 ring-4 ring-white active:scale-95 transition-transform">
-                    <i class="fa-solid fa-plus text-xl"></i>
+            <button onclick="openAddTxModal()" class="p-1 -mt-6 flex flex-col items-center">
+                <div class="w-13 h-13 p-3 bg-gradient-to-tr from-pink-500 to-purple-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-pink-500/40 ring-4 ring-white active:scale-95 transition-transform">
+                    <i class="fa-solid fa-plus text-2xl"></i>
                 </div>
-                <span class="mt-0.5 text-blue-600 font-bold">Add</span>
+                <span class="mt-0.5 text-pink-600 font-black">Add</span>
             </button>
 
-            <!-- 4. Cash Out -->
-            <button onclick="switchTab('cashout')" id="tab-cashout" class="p-1 hover:text-blue-600 flex flex-col items-center">
-                <i class="fa-solid fa-circle-arrow-up text-lg text-rose-500 mb-0.5"></i>
+            <button onclick="switchTab('cashout')" id="tab-cashout" class="p-1 hover:text-pink-600 flex flex-col items-center">
+                <i class="fa-solid fa-circle-arrow-up text-xl text-rose-500 mb-0.5"></i>
                 <span>Cash Out</span>
             </button>
 
-            <!-- 5. Notes -->
-            <button onclick="switchTab('notes')" id="tab-notes" class="p-1 hover:text-blue-600 flex flex-col items-center">
-                <i class="fa-solid fa-sticky-note text-lg text-amber-500 mb-0.5"></i>
+            <button onclick="switchTab('notes')" id="tab-notes" class="p-1 hover:text-pink-600 flex flex-col items-center">
+                <i class="fa-solid fa-sticky-note text-xl text-amber-500 mb-0.5"></i>
                 <span>Notes</span>
             </button>
 
-            <!-- 6. Search -->
-            <button onclick="switchTab('search')" id="tab-search" class="p-1 hover:text-blue-600 flex flex-col items-center">
-                <i class="fa-solid fa-magnifying-glass text-lg text-indigo-500 mb-0.5"></i>
+            <button onclick="switchTab('search')" id="tab-search" class="p-1 hover:text-pink-600 flex flex-col items-center">
+                <i class="fa-solid fa-magnifying-glass text-xl text-indigo-500 mb-0.5"></i>
                 <span>Search</span>
             </button>
         </div>
     </nav>
 
-    <!-- MODAL: ADD TRANSACTION -->
+    <!-- MODAL: ADD / EDIT TRANSACTION -->
     <div id="add-tx-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden">
         <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-receipt text-blue-600"></i> New Transaction
+                <h3 id="tx-modal-title" class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-pink-600"></i> New Transaction
                 </h3>
                 <button onclick="closeAddTxModal()" class="text-slate-400 hover:text-slate-600 p-1">
-                    <i class="fa-solid fa-xmark text-xl"></i>
+                    <i class="fa-solid fa-xmark text-2xl"></i>
                 </button>
             </div>
 
-            <!-- OCR SCANNER ATTACHMENT BOX -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-3.5 rounded-2xl border border-blue-100 space-y-2">
+            <!-- OCR Scanner Attachment Box -->
+            <div id="ocr-container" class="bg-gradient-to-r from-pink-50 to-purple-50 p-3 rounded-2xl border border-pink-100 space-y-2">
                 <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-pink-900 flex items-center gap-1.5">
                         <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> Auto-Fill from Receipt
                     </span>
-                    <span id="ocr-status" class="text-[10px] text-blue-600 font-medium hidden">Processing image...</span>
+                    <span id="ocr-status" class="text-xs text-pink-600 font-medium hidden">Scanning...</span>
                 </div>
-                
-                <p class="text-[11px] text-slate-600">Take a photo or upload a receipt screenshot to automatically detect details.</p>
-
-                <div class="flex gap-2 pt-1">
-                    <label class="flex-1 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm transition">
-                        <i class="fa-solid fa-camera text-blue-600"></i> Camera
+                <div class="flex gap-2">
+                    <label class="flex-1 bg-white hover:bg-pink-50 text-pink-700 border border-pink-200 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-camera"></i> Camera
                         <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleOCRScan(event)">
                     </label>
-                    <label class="flex-1 bg-white hover:bg-blue-50 text-indigo-700 border border-indigo-200 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm transition">
-                        <i class="fa-solid fa-image text-indigo-600"></i> Gallery
+                    <label class="flex-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-image"></i> Gallery
                         <input type="file" accept="image/*" class="hidden" onchange="handleOCRScan(event)">
                     </label>
                 </div>
             </div>
 
             <!-- FORM FIELDS -->
-            <form id="tx-form" onsubmit="saveTransaction(event)" class="space-y-3">
+            <form id="tx-form" onsubmit="saveTransaction(event)" class="space-y-3.5">
+                <input type="hidden" id="editing-tx-id" value="">
+
                 <!-- Type & Wallet -->
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-2.5">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Transaction Type</label>
-                        <select id="tx-type" required onchange="toggleStatusField()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Transaction Type</label>
+                        <select id="tx-type" required onchange="toggleTxFields()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-pink-500">
                             <option value="Cash In">📥 Cash In (-Wallet, +Cash)</option>
                             <option value="Cash Out">📤 Cash Out (+Wallet, -Cash)</option>
                             <option value="Load">📱 Buy Load (-Wallet)</option>
+                            <option value="Payment">💳 Payment (-Wallet, -Cash)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Select Wallet</label>
-                        <select id="tx-wallet" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Select Wallet</label>
+                        <select id="tx-wallet" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-pink-500">
                             <!-- Populated dynamically -->
                         </select>
                     </div>
                 </div>
 
                 <!-- Amount & Service Fee -->
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-2.5">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Amount (₱)</label>
-                        <input type="number" step="0.01" id="tx-amount" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Amount (₱)</label>
+                        <input type="number" step="0.01" id="tx-amount" required placeholder="0.00" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-extrabold text-slate-800 focus:ring-2 focus:ring-pink-500">
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Service Fee / Patong (₱)</label>
-                        <input type="number" step="0.01" id="tx-fee" placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-amber-600 focus:ring-2 focus:ring-blue-500">
+                    <div id="fee-field-container">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Service Fee / Profit (₱)</label>
+                        <input type="number" step="0.01" id="tx-fee" placeholder="0.00" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-extrabold text-amber-600 focus:ring-2 focus:ring-pink-500">
                     </div>
                 </div>
 
-                <!-- Date & Status (Claimed/Unclaimed) -->
-                <div class="grid grid-cols-2 gap-2">
+                <!-- Date & Status -->
+                <div class="grid grid-cols-2 gap-2.5">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Date & Time</label>
-                        <input type="datetime-local" id="tx-datetime" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Date & Time</label>
+                        <input type="datetime-local" id="tx-datetime" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-pink-500">
                     </div>
                     <div id="status-field-container">
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Status</label>
-                        <select id="tx-status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Status</label>
+                        <select id="tx-status" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-extrabold text-slate-700 focus:ring-2 focus:ring-pink-500">
                             <option value="CLAIMED" class="text-emerald-600">✅ CLAIMED</option>
                             <option value="UNCLAIMED" class="text-amber-600">⏳ UNCLAIMED</option>
                         </select>
@@ -257,55 +248,65 @@
                 </div>
 
                 <!-- Reference Number -->
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Reference Number</label>
-                    <input type="text" id="tx-ref" placeholder="e.g. 100293849102" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-blue-500">
+                <div id="ref-field-container">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1">Reference Number</label>
+                    <input type="text" id="tx-ref" placeholder="Enter Ref #" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-pink-500">
                 </div>
 
                 <!-- Particular / Note -->
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Particular / Note</label>
-                    <input type="text" id="tx-note" placeholder="e.g. Customer Name / Phone Number" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1">Particular / Note</label>
+                    <input type="text" id="tx-note" placeholder="Customer name or transaction note..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-pink-500">
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl text-sm shadow-md hover:from-blue-700 hover:to-indigo-700 transition">
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-extrabold rounded-xl text-sm shadow-md hover:from-pink-700 hover:to-purple-700 transition">
                     Save Transaction
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: EDIT WALLET FUND -->
+    <!-- MODAL: EDIT WALLET DETAILS & COLOR -->
     <div id="edit-wallet-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-pen-to-square text-blue-600"></i> Edit Wallet Details
+                <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-palette text-pink-600"></i> Edit Wallet & Color
                 </h3>
                 <button onclick="closeEditWalletModal()" class="text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                    <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
 
-            <form id="edit-wallet-form" onsubmit="saveWalletEdit(event)" class="space-y-3">
+            <form onsubmit="saveWalletEdit(event)" class="space-y-3.5">
                 <input type="hidden" id="edit-wallet-id">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Wallet Name</label>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1">Wallet Name</label>
                     <input type="text" id="edit-wallet-name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Account Number / Details</label>
-                    <input type="text" id="edit-wallet-acc" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1">Current Balance / Fund (₱)</label>
+                    <input type="number" step="0.01" id="edit-wallet-balance" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-extrabold text-emerald-600">
                 </div>
+
+                <!-- Color Options -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Current Balance / Fund (₱)</label>
-                    <input type="number" step="0.01" id="edit-wallet-balance" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-emerald-600">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">Girly & Cute Theme Colors</label>
+                    <select id="edit-wallet-color" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold">
+                        <option value="from-pink-500 to-rose-500">🌸 Cute Pink & Rose</option>
+                        <option value="from-purple-500 to-pink-500">💜 Lavender & Magenta</option>
+                        <option value="from-fuchsia-600 to-purple-700">🔮 Glam Fuchsia</option>
+                        <option value="from-sky-400 to-blue-500">🩵 Pastel Sky Blue</option>
+                        <option value="from-emerald-400 to-teal-600">🍃 Fresh Mint Green</option>
+                        <option value="from-amber-400 to-rose-400">Peach & Sunset Gold</option>
+                        <option value="from-slate-700 to-slate-900">🖤 Classic Dark</option>
+                    </select>
                 </div>
 
                 <div class="flex gap-2 pt-2">
                     <button type="button" onclick="closeEditWalletModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
-                    <button type="submit" class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow hover:bg-blue-700">Save Changes</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-pink-600 text-white rounded-xl text-xs font-bold shadow hover:bg-pink-700">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -315,18 +316,18 @@
     <div id="edit-cash-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-money-bill-wave text-emerald-600"></i> Edit Cash Balance
                 </h3>
                 <button onclick="closeEditCashModal()" class="text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                    <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
 
             <form onsubmit="saveCashEdit(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Physical Cash On-Hand (₱)</label>
-                    <input type="number" step="0.01" id="edit-cash-amount" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-emerald-600">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1">Physical Cash On-Hand (₱)</label>
+                    <input type="number" step="0.01" id="edit-cash-amount" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-extrabold text-emerald-600">
                 </div>
 
                 <div class="flex gap-2 pt-2">
@@ -341,11 +342,11 @@
     <script>
         // --- INITIAL DATA & STATE ---
         const DEFAULT_WALLETS = [
-            { id: 'gcash1', name: 'GCash #1', account: '0917****123', balance: 5000.00, color: 'from-blue-500 to-blue-600', icon: 'fa-mobile-screen' },
-            { id: 'gcash2', name: 'GCash #2', account: '0998****567', balance: 2500.00, color: 'from-blue-600 to-indigo-600', icon: 'fa-mobile-screen' },
-            { id: 'maya', name: 'Maya', account: '0918****890', balance: 3200.50, color: 'from-emerald-500 to-teal-600', icon: 'fa-wallet' },
-            { id: 'peddlr', name: 'Peddlr', account: 'Store POS', balance: 1850.00, color: 'from-amber-500 to-orange-600', icon: 'fa-store' },
-            { id: 'metrobank', name: 'Metrobank', account: '1234-****-89', balance: 12400.75, color: 'from-indigo-700 to-purple-800', icon: 'fa-building-columns' }
+            { id: 'gcash1', name: 'GCash #1', balance: 5000.00, color: 'from-pink-500 to-rose-500', icon: 'fa-mobile-screen' },
+            { id: 'gcash2', name: 'GCash #2', balance: 2500.00, color: 'from-purple-500 to-pink-500', icon: 'fa-mobile-screen' },
+            { id: 'maya', name: 'Maya', balance: 3200.50, color: 'from-sky-400 to-blue-500', icon: 'fa-wallet' },
+            { id: 'peddlr', name: 'Peddlr POS', balance: 1850.00, color: 'from-amber-400 to-rose-400', icon: 'fa-store' },
+            { id: 'bank', name: 'Bank Card', balance: 12400.75, color: 'from-fuchsia-600 to-purple-700', icon: 'fa-building-columns' }
         ];
 
         let wallets = JSON.parse(localStorage.getItem('ew_wallets')) || DEFAULT_WALLETS;
@@ -361,8 +362,6 @@
             renderCashAndProfit();
             populateWalletSelect();
             renderCurrentView();
-            setTodayDateTime();
-            toggleStatusField();
         });
 
         function saveStorage() {
@@ -375,12 +374,6 @@
             renderCashAndProfit();
         }
 
-        function setTodayDateTime() {
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('tx-datetime').value = now.toISOString().slice(0,16);
-        }
-
         // --- RENDER WALLETS & TOTAL BALANCE ---
         function renderWallets() {
             const container = document.getElementById('wallets-container');
@@ -390,22 +383,19 @@
             wallets.forEach(w => {
                 ewalletTotal += parseFloat(w.balance || 0);
                 const card = document.createElement('div');
-                card.className = `bg-gradient-to-br ${w.color} text-white p-3 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-24`;
+                card.className = `bg-gradient-to-br ${w.color} text-white p-3.5 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-28`;
                 card.innerHTML = `
                     <div class="flex justify-between items-start z-10">
-                        <div>
-                            <p class="text-[10px] uppercase font-bold tracking-wider opacity-80">${w.name}</p>
-                            <p class="text-[10px] opacity-75 font-mono">${w.account}</p>
-                        </div>
+                        <p class="text-xs uppercase font-extrabold tracking-wider opacity-90">${w.name}</p>
                         <button onclick="openEditWalletModal('${w.id}')" class="w-6 h-6 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-xs transition">
                             <i class="fa-solid fa-gear"></i>
                         </button>
                     </div>
                     <div class="z-10">
                         <span class="text-xs opacity-80">₱</span>
-                        <span class="text-base font-black tracking-tight">${parseFloat(w.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        <span class="text-lg font-black tracking-tight">${parseFloat(w.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                     </div>
-                    <i class="fa-solid ${w.icon} absolute -right-2 -bottom-2 text-5xl opacity-20"></i>
+                    <i class="fa-solid ${w.icon} absolute -right-2 -bottom-2 text-6xl opacity-20"></i>
                 `;
                 container.appendChild(card);
             });
@@ -431,70 +421,146 @@
             });
         }
 
-        function toggleStatusField() {
+        function toggleTxFields() {
             const type = document.getElementById('tx-type').value;
             const statusContainer = document.getElementById('status-field-container');
-            if (type === 'Cash Out' || type === 'Load') {
-                statusContainer.classList.remove('hidden');
-            } else {
+            const feeContainer = document.getElementById('fee-field-container');
+            const refContainer = document.getElementById('ref-field-container');
+
+            if (type === 'Payment') {
                 statusContainer.classList.add('hidden');
+                feeContainer.classList.add('hidden');
+                refContainer.classList.add('hidden');
+            } else {
+                feeContainer.classList.remove('hidden');
+                refContainer.classList.remove('hidden');
+                if (type === 'Cash Out' || type === 'Load') {
+                    statusContainer.classList.remove('hidden');
+                } else {
+                    statusContainer.classList.add('hidden');
+                }
             }
         }
 
-        // --- SAVE TRANSACTION LOGIC ---
+        // --- MATH REVERSAL ENGINE (FOR EDIT / DELETE) ---
+        function applyMathForTx(tx, isReverse = false) {
+            const multiplier = isReverse ? -1 : 1;
+            const walletIndex = wallets.findIndex(w => w.id === tx.walletId);
+            const amt = parseFloat(tx.amount) || 0;
+            const fee = parseFloat(tx.fee) || 0;
+
+            if (walletIndex !== -1) {
+                if (tx.type === 'Cash In') {
+                    // Cash In: -Wallet, +Cash
+                    wallets[walletIndex].balance -= amt * multiplier;
+                    cashBalance += amt * multiplier;
+                } else if (tx.type === 'Cash Out') {
+                    // Cash Out: +Wallet, -Cash
+                    wallets[walletIndex].balance += amt * multiplier;
+                    cashBalance -= amt * multiplier;
+                } else if (tx.type === 'Load') {
+                    // Load: -Wallet
+                    wallets[walletIndex].balance -= amt * multiplier;
+                } else if (tx.type === 'Payment') {
+                    // Payment: -Wallet, -Cash
+                    wallets[walletIndex].balance -= amt * multiplier;
+                    cashBalance -= amt * multiplier;
+                }
+            }
+
+            if (fee > 0) {
+                totalProfit += fee * multiplier;
+            }
+        }
+
+        // --- SAVE TRANSACTION (CREATE & EDIT) ---
         function saveTransaction(e) {
             e.preventDefault();
 
+            const editingId = document.getElementById('editing-tx-id').value;
             const type = document.getElementById('tx-type').value;
             const walletId = document.getElementById('tx-wallet').value;
             const amount = parseFloat(document.getElementById('tx-amount').value) || 0;
-            const fee = parseFloat(document.getElementById('tx-fee').value) || 0;
+            const fee = (type === 'Payment') ? 0 : (parseFloat(document.getElementById('tx-fee').value) || 0);
             const datetime = document.getElementById('tx-datetime').value;
             const status = document.getElementById('tx-status').value;
             const ref = document.getElementById('tx-ref').value.trim();
             const note = document.getElementById('tx-note').value.trim();
 
-            const walletIndex = wallets.findIndex(w => w.id === walletId);
-            if (walletIndex === -1) return;
+            const wallet = wallets.find(w => w.id === walletId);
+            if (!wallet) return;
 
-            // Update Balances Based on Rules
-            if (type === 'Cash In') {
-                // Cash In: -Wallet, +Cash Balance
-                wallets[walletIndex].balance = parseFloat(wallets[walletIndex].balance) - amount;
-                cashBalance += amount;
-            } else if (type === 'Cash Out') {
-                // Cash Out: +Wallet, -Cash Balance
-                wallets[walletIndex].balance = parseFloat(wallets[walletIndex].balance) + amount;
-                cashBalance -= amount;
-            } else if (type === 'Load') {
-                // Load: -Wallet
-                wallets[walletIndex].balance = parseFloat(wallets[walletIndex].balance) - amount;
+            if (editingId) {
+                // Editing existing transaction: First reverse old math
+                const oldIndex = transactions.findIndex(t => t.id === editingId);
+                if (oldIndex !== -1) {
+                    applyMathForTx(transactions[oldIndex], true); // REVERSE OLD
+                    
+                    // Update Record
+                    transactions[oldIndex] = {
+                        id: editingId,
+                        type, walletId, walletName: wallet.name,
+                        amount, fee, datetime,
+                        status: (type === 'Cash Out' || type === 'Load') ? status : 'COMPLETED',
+                        ref: (type === 'Payment') ? '' : ref,
+                        note
+                    };
+
+                    applyMathForTx(transactions[oldIndex], false); // APPLY NEW
+                }
+            } else {
+                // New Transaction
+                const newTx = {
+                    id: 'tx_' + Date.now(),
+                    type, walletId, walletName: wallet.name,
+                    amount, fee, datetime,
+                    status: (type === 'Cash Out' || type === 'Load') ? status : 'COMPLETED',
+                    ref: (type === 'Payment') ? '' : ref,
+                    note
+                };
+
+                applyMathForTx(newTx, false); // APPLY
+                transactions.unshift(newTx);
             }
 
-            // Total Profit = Accumulate Service Fee / Patong
-            if (fee > 0) {
-                totalProfit += fee;
-            }
-
-            // Create Transaction Record
-            const newTx = {
-                id: 'tx_' + Date.now(),
-                type: type,
-                walletId: walletId,
-                walletName: wallets[walletIndex].name,
-                amount: amount,
-                fee: fee,
-                datetime: datetime,
-                status: (type === 'Cash Out' || type === 'Load') ? status : 'COMPLETED',
-                ref: ref,
-                note: note
-            };
-
-            transactions.unshift(newTx);
             saveStorage();
             populateWalletSelect();
             closeAddTxModal();
             renderCurrentView();
+        }
+
+        function deleteTransaction(txId) {
+            if (confirm("Sigurado ka bang gusto mong idelete ang transaction na ito? Awtomatikong ibabalik ang mga nabawas o naidagdag na pera.")) {
+                const idx = transactions.findIndex(t => t.id === txId);
+                if (idx !== -1) {
+                    applyMathForTx(transactions[idx], true); // REVERSE MATH
+                    transactions.splice(idx, 1);
+                    saveStorage();
+                    populateWalletSelect();
+                    renderCurrentView();
+                }
+            }
+        }
+
+        function editTransaction(txId) {
+            const tx = transactions.find(t => t.id === txId);
+            if (!tx) return;
+
+            document.getElementById('editing-tx-id').value = tx.id;
+            document.getElementById('tx-type').value = tx.type;
+            document.getElementById('tx-wallet').value = tx.walletId;
+            document.getElementById('tx-amount').value = tx.amount;
+            document.getElementById('tx-fee').value = tx.fee || '';
+            document.getElementById('tx-datetime').value = tx.datetime;
+            document.getElementById('tx-status').value = tx.status || 'CLAIMED';
+            document.getElementById('tx-ref').value = tx.ref || '';
+            document.getElementById('tx-note').value = tx.note || '';
+
+            document.getElementById('tx-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-pink-600"></i> Edit Transaction`;
+            document.getElementById('ocr-container').classList.add('hidden'); // Hide OCR on edit
+            
+            toggleTxFields();
+            openAddTxModal();
         }
 
         function toggleClaimStatus(txId) {
@@ -506,13 +572,13 @@
             }
         }
 
-        // --- VIEWS AND TAB SWITCHING ---
+        // --- VIEWS & TABS ---
         function switchTab(tab) {
             currentTab = tab;
-            document.querySelectorAll('nav button').forEach(b => b.className = b.className.replace('text-blue-600', 'text-slate-500'));
+            document.querySelectorAll('nav button').forEach(b => b.className = b.className.replace('text-pink-600', 'text-slate-500'));
             
             const activeTabBtn = document.getElementById(`tab-${tab}`);
-            if (activeTabBtn) activeTabBtn.classList.add('text-blue-600');
+            if (activeTabBtn) activeTabBtn.classList.add('text-pink-600');
 
             document.getElementById('search-bar-container').classList.toggle('hidden', tab !== 'search');
             document.getElementById('notes-view-container').classList.toggle('hidden', tab !== 'notes');
@@ -536,7 +602,7 @@
             let filtered = [...transactions];
 
             if (currentTab === 'cashin') {
-                title.innerHTML = `<i class="fa-solid fa-circle-arrow-down text-emerald-500"></i> Cash In Transactions`;
+                title.innerHTML = `<i class="fa-solid fa-circle-arrow-down text-emerald-500"></i> Cash In Logs`;
                 filtered = filtered.filter(t => t.type === 'Cash In');
             } else if (currentTab === 'cashout') {
                 title.innerHTML = `<i class="fa-solid fa-circle-arrow-up text-rose-500"></i> Cash Out & Load Logs`;
@@ -553,47 +619,58 @@
                     );
                 }
             } else {
-                title.innerHTML = `<i class="fa-solid fa-list-ul text-blue-600"></i> Main Transaction Log`;
+                title.innerHTML = `<i class="fa-solid fa-list-ul text-pink-600"></i> Main Transaction Log`;
             }
 
             count.innerText = `${filtered.length} records`;
 
             if (filtered.length === 0) {
-                list.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">No transactions found.</p>`;
+                list.innerHTML = `<p class="text-center text-sm text-slate-400 py-8 font-medium">No transactions found.</p>`;
                 return;
             }
 
             filtered.forEach(t => {
-                const isCashIn = t.type === 'Cash In';
-                const isLoad = t.type === 'Load';
+                let badgeColor = 'bg-slate-100 text-slate-700';
+                if (t.type === 'Cash In') badgeColor = 'bg-emerald-100 text-emerald-800';
+                else if (t.type === 'Cash Out') badgeColor = 'bg-rose-100 text-rose-800';
+                else if (t.type === 'Load') badgeColor = 'bg-purple-100 text-purple-800';
+                else if (t.type === 'Payment') badgeColor = 'bg-indigo-100 text-indigo-800';
                 
-                let badgeColor = isCashIn ? 'bg-emerald-100 text-emerald-700' : (isLoad ? 'bg-purple-100 text-purple-700' : 'bg-rose-100 text-rose-700');
                 let statusBadge = '';
-
                 if (t.type === 'Cash Out' || t.type === 'Load') {
                     const isClaimed = t.status === 'CLAIMED';
                     statusBadge = `
-                        <button onclick="toggleClaimStatus('${t.id}')" class="text-[9px] px-2 py-0.5 rounded-full font-bold transition ${isClaimed ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-amber-100 text-amber-700 border border-amber-300 animate-pulse'}">
+                        <button onclick="toggleClaimStatus('${t.id}')" class="text-[10px] px-2 py-0.5 rounded-full font-extrabold transition ${isClaimed ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-amber-100 text-amber-700 border border-amber-300 animate-pulse'}">
                             ${isClaimed ? '✅ CLAIMED' : '⏳ UNCLAIMED'}
                         </button>
                     `;
                 }
 
                 const item = document.createElement('div');
-                item.className = 'bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center text-xs';
+                item.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-200 flex justify-between items-center text-xs';
                 item.innerHTML = `
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
-                            <span class="px-2 py-0.5 rounded-md font-extrabold text-[10px] ${badgeColor}">${t.type}</span>
-                            <span class="font-bold text-slate-700">${t.walletName}</span>
+                            <span class="px-2.5 py-0.5 rounded-md font-extrabold text-xs ${badgeColor}">${t.type}</span>
+                            <span class="font-extrabold text-slate-800 text-sm">${t.walletName}</span>
                             ${statusBadge}
                         </div>
-                        <p class="text-[10px] text-slate-400 font-mono">${t.datetime.replace('T', ' ')} ${t.ref ? '| Ref: ' + t.ref : ''}</p>
-                        ${t.note ? `<p class="text-[11px] text-slate-600 italic">"${t.note}"</p>` : ''}
+                        <p class="text-xs text-slate-400 font-mono font-medium">${t.datetime.replace('T', ' ')} ${t.ref ? '| Ref: ' + t.ref : ''}</p>
+                        ${t.note ? `<p class="text-xs text-slate-600 font-semibold italic">"${t.note}"</p>` : ''}
                     </div>
-                    <div class="text-right">
-                        <p class="font-black text-sm text-slate-800">₱${parseFloat(t.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-                        ${t.fee > 0 ? `<p class="text-[10px] font-bold text-amber-600">+₱${parseFloat(t.fee).toFixed(2)} Fee</p>` : ''}
+                    <div class="text-right space-y-1">
+                        <p class="font-black text-base text-slate-900">₱${parseFloat(t.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                        ${t.fee > 0 ? `<p class="text-xs font-bold text-amber-600">+₱${parseFloat(t.fee).toFixed(2)} Fee</p>` : ''}
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex justify-end gap-2 pt-1">
+                            <button onclick="editTransaction('${t.id}')" class="text-blue-600 hover:text-blue-800 font-bold p-1">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button onclick="deleteTransaction('${t.id}')" class="text-rose-500 hover:text-rose-700 font-bold p-1">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
                 list.appendChild(item);
@@ -606,11 +683,11 @@
             container.innerHTML = '';
             notes.forEach((n, idx) => {
                 const card = document.createElement('div');
-                card.className = 'bg-amber-50 p-2.5 rounded-xl border border-amber-200 flex justify-between items-center text-xs text-amber-900';
+                card.className = 'bg-amber-50 p-3 rounded-xl border border-amber-200 flex justify-between items-center text-xs text-amber-900 font-semibold';
                 card.innerHTML = `
                     <span>${n}</span>
                     <button onclick="deleteNote(${idx})" class="text-amber-400 hover:text-rose-500 p-1">
-                        <i class="fa-solid fa-trash"></i>
+                        <i class="fa-solid fa-trash text-sm"></i>
                     </button>
                 `;
                 container.appendChild(card);
@@ -638,19 +715,44 @@
             renderCurrentView();
         }
 
-        // --- MODAL CONTROLS & OCR HANDLER ---
-        function openAddTxModal() { document.getElementById('add-tx-modal').classList.remove('hidden'); }
-        function closeAddTxModal() { document.getElementById('add-tx-modal').classList.add('hidden'); }
+        // --- MODALS & FORM RESET ---
+        function openAddTxModal() { 
+            document.getElementById('add-tx-modal').classList.remove('hidden'); 
+        }
+
+        function closeAddTxModal() { 
+            document.getElementById('add-tx-modal').classList.add('hidden'); 
+            resetTxForm();
+        }
+
+        function resetTxForm() {
+            document.getElementById('editing-tx-id').value = '';
+            document.getElementById('tx-modal-title').innerHTML = `<i class="fa-solid fa-receipt text-pink-600"></i> New Transaction`;
+            document.getElementById('ocr-container').classList.remove('hidden');
+            
+            // Clear inputs for fresh entry
+            document.getElementById('tx-amount').value = '';
+            document.getElementById('tx-fee').value = '';
+            document.getElementById('tx-ref').value = '';
+            document.getElementById('tx-note').value = '';
+            
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('tx-datetime').value = now.toISOString().slice(0,16);
+            
+            toggleTxFields();
+        }
         
         function openEditWalletModal(id) {
             const w = wallets.find(item => item.id === id);
             if (!w) return;
             document.getElementById('edit-wallet-id').value = w.id;
             document.getElementById('edit-wallet-name').value = w.name;
-            document.getElementById('edit-wallet-acc').value = w.account;
             document.getElementById('edit-wallet-balance').value = w.balance;
+            document.getElementById('edit-wallet-color').value = w.color || 'from-pink-500 to-rose-500';
             document.getElementById('edit-wallet-modal').classList.remove('hidden');
         }
+
         function closeEditWalletModal() { document.getElementById('edit-wallet-modal').classList.add('hidden'); }
 
         function saveWalletEdit(e) {
@@ -659,8 +761,8 @@
             const w = wallets.find(item => item.id === id);
             if (w) {
                 w.name = document.getElementById('edit-wallet-name').value;
-                w.account = document.getElementById('edit-wallet-acc').value;
                 w.balance = parseFloat(document.getElementById('edit-wallet-balance').value) || 0;
+                w.color = document.getElementById('edit-wallet-color').value;
                 saveStorage();
                 populateWalletSelect();
                 closeEditWalletModal();
@@ -671,6 +773,7 @@
             document.getElementById('edit-cash-amount').value = cashBalance;
             document.getElementById('edit-cash-modal').classList.remove('hidden');
         }
+
         function closeEditCashModal() { document.getElementById('edit-cash-modal').classList.add('hidden'); }
 
         function saveCashEdit(e) {
@@ -680,7 +783,7 @@
             closeEditCashModal();
         }
 
-        // OCR Scanner Simulation/Handler
+        // OCR Scanner Handler
         async function handleOCRScan(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -695,7 +798,6 @@
                 const text = ret.data.text;
                 await worker.terminate();
 
-                // Auto detect Amount & Ref Number
                 const amountMatch = text.match(/(?:PHP|P|₱)?\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)/i);
                 const refMatch = text.match(/(?:Ref|Reference|Txn|Transaction)\s*#?\s*[:.-]?\s*([0-9A-Za-z]{6,20})/i);
 
