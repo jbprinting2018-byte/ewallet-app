@@ -4,27 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>E-Wallet Tracker Pro</title>
-    <script src="https://tailwindcss.com"></script>
+    <!-- MAS STABLE NA VERSYON NG TAILWIND CSS -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
     <link rel="stylesheet" href="https://cloudflare.com">
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
-<body class="bg-pink-50/50 font-sans text-slate-800 min-h-screen pb-24">
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen pb-24">
 
     <!-- TOP HEADER -->
-    <header class="bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white p-4 sticky top-0 z-30 shadow-md">
+    <header class="bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 text-white p-4 sticky top-0 z-30 shadow-md">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black tracking-wide flex items-center gap-2"><i class="fa-solid fa-wallet text-amber-300"></i> E-WALLET TRACKER</h1>
-                <p class="text-[10px] text-pink-100 font-medium">Smart Financial Log & Store Tracker</p>
-                <div class="flex items-center gap-1 mt-1 text-[9px] text-emerald-300 font-semibold">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <h1 class="text-xl font-black tracking-wide flex items-center gap-2"><i class="fa-solid fa-wallet text-yellow-300"></i> E-WALLET TRACKER</h1>
+                <p class="text-xs text-pink-100 font-medium">Smart Financial Log & Store Tracker</p>
+                <div class="flex items-center gap-1 mt-1 text-xs text-green-300 font-semibold">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
                     <span id="sync-status">Firebase Real-time Cloud Active</span>
                 </div>
             </div>
             <div class="text-right">
-                <span class="text-[9px] text-pink-100 block uppercase font-bold tracking-wider">Total Capital</span>
-                <span id="total-balance" class="text-lg font-black text-amber-300">₱0.00</span>
+                <span class="text-xs text-pink-100 block uppercase font-bold tracking-wider">Total Capital</span>
+                <span id="total-balance" class="text-lg font-black text-yellow-300">₱0.00</span>
             </div>
         </div>
     </header>
@@ -32,95 +33,95 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-md mx-auto p-4 space-y-4">
         <!-- OVERVIEW CARDS -->
-        <section class="grid grid-cols-2 gap-3">
-            <div class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-3.5 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
-                <div class="flex justify-between items-start z-10">
-                    <div><p class="text-[10px] uppercase font-extrabold tracking-wider opacity-90">Cash Balance</p><p class="text-[9px] opacity-80">Physical Cash</p></div>
-                    <button onclick="openEditCashModal()" class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs"><i class="fa-solid fa-pen"></i></button>
+        <section class="grid grid-cols-2 gap-3 flex flex-row">
+            <div class="bg-green-600 text-white p-4 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-28 w-1/2 float-left mr-2">
+                <div>
+                    <p class="text-xs uppercase font-extrabold tracking-wider opacity-90">Cash Balance</p>
+                    <p class="text-xs opacity-80">Physical Cash</p>
                 </div>
-                <div class="z-10"><span class="text-[10px] opacity-80">₱</span><span id="cash-balance" class="text-xl font-black">0.00</span></div>
-                <i class="fa-solid fa-money-bill-wave absolute -right-2 -bottom-2 text-6xl opacity-20"></i>
+                <div class="mt-2"><span class="text-xs opacity-80">₱</span><span id="cash-balance" class="text-xl font-black">0.00</span></div>
             </div>
-            <div class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-3.5 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
-                <div class="flex justify-between items-start z-10">
-                    <div><p class="text-[10px] uppercase font-extrabold tracking-wider opacity-90">Total Profit</p><p class="text-[9px] opacity-80">Service Fee / Patong</p></div>
-                    <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs"><i class="fa-solid fa-coins"></i></div>
+            <div class="bg-yellow-500 text-white p-4 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-28 w-1/2 float-left">
+                <div>
+                    <p class="text-xs uppercase font-extrabold tracking-wider opacity-90">Total Profit</p>
+                    <p class="text-xs opacity-80">Service Fee / Patong</p>
                 </div>
-                <div class="z-10"><span class="text-[10px] opacity-80">₱</span><span id="total-profit" class="text-xl font-black">0.00</span></div>
-                <i class="fa-solid fa-chart-line absolute -right-2 -bottom-2 text-6xl opacity-20"></i>
+                <div class="mt-2"><span class="text-xs opacity-80">₱</span><span id="total-profit" class="text-xl font-black">0.00</span></div>
             </div>
+            <div class="clear-both"></div>
         </section>
 
         <!-- WALLETS LIST -->
-        <section>
+        <section class="mt-4">
             <div class="flex justify-between items-center mb-2.5">
-                <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">My E-Wallets</h2>
+                <h2 class="text-xs font-extrabold uppercase tracking-wider text-gray-600">My E-Wallets</h2>
                 <button onclick="openAddWalletModal()" class="text-xs text-pink-600 font-bold hover:underline"><i class="fa-solid fa-plus"></i> Add Wallet</button>
             </div>
             <div class="grid grid-cols-2 gap-3" id="wallets-container"></div>
         </section>
 
         <!-- NOTES SECTION -->
-        <section class="bg-white rounded-2xl p-4 shadow-sm border border-pink-100 space-y-3">
-            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-                <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-list-ul text-pink-600"></i> Quick Notes & Reminders</h2>
-                <span id="record-count" class="text-[10px] px-2.5 py-1 rounded-full bg-pink-100 font-bold text-pink-700">0 records</span>
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-pink-100 space-y-3 mt-4">
+            <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+                <h2 class="text-sm font-extrabold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-list-ul text-pink-600"></i> Quick Notes & Reminders</h2>
+                <span id="record-count" class="text-xs px-2.5 py-1 rounded-full bg-pink-100 font-bold text-pink-700">0 records</span>
             </div>
-            <div class="flex gap-2">
-                <input type="text" id="new-note-input" placeholder="Add a quick note..." class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
-                <button onclick="addNote()" class="bg-pink-600 text-white px-4 py-2 rounded-xl text-xs font-bold">Add</button>
+            <div class="flex gap-2 mt-2">
+                <input type="text" id="new-note-input" placeholder="Add a quick note..." class="flex-1 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
+                <button onclick="addNote()" class="bg-pink-600 text-white px-4 py-2 rounded-xl text-xs font-bold ml-2">Add</button>
             </div>
-            <div id="notes-list" class="space-y-2 text-xs text-slate-400">No quick notes stored.</div>
+            <div id="notes-list" class="space-y-2 text-xs text-gray-400 mt-2">No quick notes stored.</div>
         </section>
 
         <!-- QUICK ANALYTICS SUMMARY -->
-        <section class="bg-white rounded-2xl p-4 shadow-sm border border-pink-100 space-y-3">
-            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600"><i class="fa-solid fa-chart-pie text-pink-600"></i> Quick Analytics Summary</h2>
-            <div class="grid grid-cols-2 gap-4 text-xs font-bold">
-                <div class="bg-slate-50 p-3 rounded-xl space-y-1">
-                    <p class="text-slate-500 text-[10px] uppercase flex justify-between">📅 TODAY <span class="text-pink-600">Aug 13</span></p>
-                    <p class="text-emerald-600 flex justify-between">In: <span>₱0.00</span></p>
-                    <p class="text-rose-600 flex justify-between">Out: <span>₱0.00</span></p>
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-pink-100 space-y-3 mt-4">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-gray-600 mb-2"><i class="fa-solid fa-chart-pie text-pink-600"></i> Quick Analytics Summary</h2>
+            <div class="grid grid-cols-2 gap-4 text-xs font-bold flex flex-row">
+                <div class="bg-gray-50 p-3 rounded-xl space-y-1 w-1/2 float-left mr-2">
+                    <p class="text-gray-500 text-xs uppercase flex justify-between">📅 TODAY <span class="text-pink-600">Aug 13</span></p>
+                    <p class="text-green-600">In: <span>₱0.00</span></p>
+                    <p class="text-red-600">Out: <span>₱0.00</span></p>
                 </div>
-                <div class="bg-slate-50 p-3 rounded-xl space-y-1">
-                    <p class="text-slate-500 text-[10px] uppercase flex justify-between">📅 THIS WEEK <span class="text-purple-600">7 Days</span></p>
-                    <p class="text-emerald-600 flex justify-between">In: <span>₱0.00</span></p>
-                    <p class="text-rose-600 flex justify-between">Out: <span>₱0.00</span></p>
+                <div class="bg-gray-50 p-3 rounded-xl space-y-1 w-1/2 float-left">
+                    <p class="text-gray-500 text-xs uppercase flex justify-between">📅 THIS WEEK <span class="text-purple-600">7 Days</span></p>
+                    <p class="text-green-600">In: <span>₱0.00</span></p>
+                    <p class="text-red-600">Out: <span>₱0.00</span></p>
                 </div>
+                <div class="clear-both"></div>
             </div>
-        </section>
-    </main>    <!-- POP-UP MODAL FORM -->
-    <div id="wallet-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl">
+        </section>    <!-- POP-UP MODAL FORM -->
+    <div id="wallet-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden p-4" style="background-color: rgba(0,0,0,0.5);">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl mx-auto my-auto mt-24">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-extrabold text-sm text-slate-800 uppercase tracking-wider">➕ Add New E-Wallet</h3>
-                <button onclick="closeAddWalletModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <h3 class="font-bold text-sm text-gray-800 uppercase tracking-wider">➕ Add New E-Wallet</h3>
+                <button onclick="closeAddWalletModal()" class="text-gray-400 float-right font-bold">❌</button>
+                <div class="clear-both"></div>
             </div>
-            <div class="space-y-3">
+            <div class="space-y-3 mt-2">
                 <div>
-                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Wallet Name</label>
-                    <input type="text" id="wallet-name-input" placeholder="e.g., GCash, PayMaya" class="w-full px-3 py-2 text-xs bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <label class="text-xs font-bold text-gray-500 uppercase block mb-1">Wallet Name</label>
+                    <input type="text" id="wallet-name-input" placeholder="e.g., GCash, PayMaya" class="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-300 rounded-xl focus:outline-none">
                 </div>
-                <div>
-                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Current Balance</label>
-                    <input type="number" id="wallet-balance-input" placeholder="0.00" class="w-full px-3 py-2 text-xs bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500">
+                <div class="mt-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase block mb-1">Current Balance</label>
+                    <input type="number" id="wallet-balance-input" placeholder="0.00" class="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-300 rounded-xl focus:outline-none">
                 </div>
             </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeAddWalletModal()" class="flex-1 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
-                <button onclick="saveWalletToFirebase()" class="flex-1 py-2 bg-pink-600 text-white rounded-xl text-xs font-bold shadow-md">Save Wallet</button>
+            <div class="flex gap-2 pt-2 mt-4">
+                <button onclick="closeAddWalletModal()" class="py-2 px-4 bg-gray-100 text-gray-600 rounded-xl text-xs font-bold mr-2">Cancel</button>
+                <button onclick="saveWalletToFirebase()" class="py-2 px-4 bg-pink-600 text-white rounded-xl text-xs font-bold shadow-md">Save Wallet</button>
             </div>
         </div>
     </div>
 
     <!-- BOTTOM NAV -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-40 py-2">
-        <div class="max-w-md mx-auto flex justify-around items-center text-slate-500 text-[10px] font-bold">
-            <button class="flex flex-col items-center gap-1 text-pink-600"><i class="fa-solid fa-list-check text-lg"></i>Main Log</button>
-            <button class="flex flex-col items-center gap-1 text-emerald-600"><i class="fa-solid fa-arrow-down-long text-lg"></i>Cash In</button>
-            <button onclick="openAddWalletModal()" class="w-12 h-12 bg-gradient-to-tr from-pink-600 to-purple-600 text-white rounded-full flex items-center justify-center text-xl shadow-md transform -translate-y-4 border-4 border-white"><i class="fa-solid fa-plus"></i></button>
-            <button class="flex flex-col items-center gap-1 text-rose-600"><i class="fa-solid fa-arrow-up-long text-lg"></i>Cash Out</button>
-            <button class="flex flex-col items-center gap-1 text-amber-600"><i class="fa-solid fa-file-lines text-lg"></i>Notes</button>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 py-3 w-full" style="position: fixed; bottom: 0; width:100%;">
+        <div class="max-w-md mx-auto flex justify-between items-center text-gray-500 text-xs font-bold px-4">
+            <button class="text-pink-600">Main Log</button>
+            <button class="text-green-600">Cash In</button>
+            <button onclick="openAddWalletModal()" class="bg-pink-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg shadow-md">＋</button>
+            <button class="text-red-600">Cash Out</button>
+            <button class="text-yellow-600">Notes</button>
         </div>
     </nav>
 
@@ -147,13 +148,13 @@
                 Object.keys(data).forEach((key) => {
                     count++;
                     const div = document.createElement('div');
-                    div.className = "flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border mt-1 text-xs text-slate-700";
-                    div.innerHTML = `<span>${data[key].text}</span><button onclick="deleteNote('${key}')" class="text-rose-500"><i class="fa-solid fa-trash-can"></i></button>`;
+                    div.className = "bg-gray-50 p-2.5 rounded-xl border mt-1 text-xs text-gray-700 flex justify-between";
+                    div.innerHTML = `<span>${data[key].text}</span><button onclick="deleteNote('${key}')" class="text-red-500 ml-4">🗑️</button>`;
                     notesList.appendChild(div);
                 });
                 recordCount.innerText = `${count} records`;
             } else {
-                notesList.innerHTML = `<div class="text-slate-400 py-4 text-center">No quick notes stored.</div>`;
+                notesList.innerHTML = `<div class="text-gray-400 py-4 text-center">No quick notes stored.</div>`;
                 recordCount.innerText = `0 records`;
             }
         });
@@ -183,12 +184,12 @@
                 Object.keys(data).forEach((key) => {
                     totalCapital += data[key].balance;
                     const card = document.createElement('div');
-                    card.className = "bg-white p-3 rounded-2xl border border-pink-100 shadow-sm flex justify-between items-center";
-                    card.innerHTML = `<div><p class="text-xs font-black text-slate-700">${data[key].name}</p><p class="text-[11px] font-bold text-pink-600 mt-1">₱${data[key].balance.toLocaleString('en-US', {minimumFractionDigits:2})}</p></div><button onclick="deleteWallet('${key}')" class="text-slate-300 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button>`;
+                    card.className = "bg-white p-3 rounded-2xl border border-pink-100 shadow-sm flex justify-between items-center mt-2";
+                    card.innerHTML = `<div><p class="text-xs font-bold text-gray-700">${data[key].name}</p><p class="text-xs font-bold text-pink-600 mt-1">₱${data[key].balance.toLocaleString('en-US', {minimumFractionDigits:2})}</p></div><button onclick="deleteWallet('${key}')" class="text-gray-300 hover:text-red-500 ml-4">🗑️</button>`;
                     container.appendChild(card);
                 });
             } else {
-                container.innerHTML = `<div class="col-span-2 text-center text-[11px] text-slate-400 py-2">No wallets added yet.</div>`;
+                container.innerHTML = `<div class="text-center text-xs text-gray-400 py-2">No wallets added yet.</div>`;
             }
             totalBalanceEl.innerText = `₱${totalCapital.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
         });
@@ -198,3 +199,5 @@
     </script>
 </body>
 </html>
+
+    </main>
